@@ -83,25 +83,27 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .rbody { flex: 1 1 0; min-height: 0; overflow-y: auto; padding: 12px 14px; display: flex; flex-direction: column; gap: 12px; -webkit-overflow-scrolling: touch; }
 .g2 { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 10px; align-items: start; }
 .shh { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 13px; }
-.mons { flex: none; border-top: 1px solid var(--line); background: var(--panel); padding: 8px 14px 10px; }
-.mons .mh { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; font-size: 12px; color: var(--mute); letter-spacing: .04em; }
-.mons .mh b { color: var(--text); font-weight: 700; }
-.mons .mg { display: grid; grid-template-columns: minmax(0,1fr) 34px minmax(0,1fr); gap: 8px; align-items: center; }
-.mons .mc { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 10px; color: var(--mute); text-align: center; line-height: 1.2; }
-.mon { position: relative; min-width: 0; }
-.mon .lb { display: flex; justify-content: space-between; align-items: baseline; font-size: 12px; margin-bottom: 3px; }
-.mon .lb b { font-weight: 700; }
-.mon.L .lb b { color: var(--left); } .mon.R .lb b { color: var(--right); }
-.mon .scr { position: relative; height: clamp(64px, 12vh, 104px); aspect-ratio: 16/9; max-width: 100%; margin: 0 auto; border: 3px solid #2e3841; border-radius: 6px; background: repeating-linear-gradient(135deg, #161c21 0 10px, #1a2127 10px 20px); display: flex; align-items: center; justify-content: center; text-align: center; overflow: hidden; }
+.mons { flex: none; border-top: 1px solid var(--line); background: var(--panel); padding: 6px 12px; }
+.mons .mg { display: grid; grid-template-columns: minmax(0,1fr) 48px minmax(0,1fr); gap: 6px; align-items: center; }
+.mons .mc { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 10px; color: var(--mute); text-align: center; line-height: 1.15; }
+.mon { min-width: 0; display: flex; align-items: center; gap: 8px; }
+.mon.R { flex-direction: row-reverse; text-align: right; }
+.mon .tx { min-width: 0; flex: 1 1 auto; display: flex; flex-direction: column; gap: 2px; font-size: 11px; color: var(--mute); line-height: 1.25; }
+.mon.R .tx { align-items: flex-end; }
+.mon .tx b { font-size: 13px; font-weight: 700; }
+.mon.L .tx b { color: var(--left); } .mon.R .tx b { color: var(--right); }
+.mon .tx .cp { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+.mon .scr { position: relative; flex: none; height: 56px; aspect-ratio: 16/9; border: 3px solid #2e3841; border-radius: 6px; background: repeating-linear-gradient(135deg, #161c21 0 8px, #1a2127 8px 16px); display: flex; align-items: center; justify-content: center; text-align: center; overflow: hidden; }
 .mon.L .scr { border-color: color-mix(in srgb, var(--left) 55%, #2e3841); }
 .mon.R .scr { border-color: color-mix(in srgb, var(--right) 55%, #2e3841); }
 .mon .scr img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #000; }
-.mon .scr .ph0 { font-size: 12px; color: var(--mute); padding: 4px; line-height: 1.3; }
-.mon .scr .ph0 b { display: block; color: var(--text); font-size: 14px; }
-.mon .dots { display: flex; justify-content: center; gap: 4px; margin-top: 4px; }
-.mon .dots i { width: 14px; height: 4px; border-radius: 2px; background: #2e3841; }
+.mon .scr .ph0 { font-size: 11px; color: var(--mute); }
+.mon .dots { display: flex; gap: 3px; }
+.mon.R .dots { justify-content: flex-end; }
+.mon .dots i { width: 12px; height: 4px; border-radius: 2px; background: #2e3841; }
 .mon .dots i.on { background: var(--accent); }
 .mon .dots i.done { background: #5a6773; }
+.stagebox svg { max-height: 104px; }
 .foot { flex: none; border-top: 1px solid var(--line); background: var(--panel2); padding: 10px 14px; display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 4px 12px; align-items: center; }
 .nx { all: unset; cursor: pointer; display: block; min-width: 0; }
 .nx .n { font-weight: 700; font-size: 15px; line-height: 1.3; }
@@ -457,10 +459,10 @@ function updateMons(){
   var key=sel+'|'+(p.pg), e=(sel===curIdx())?Math.max(0,(now()-p.start)/1000):0;
   if(monKey!==key){
     monKey=key;
-    var h='<div class="mh"><span><b>대형 모니터</b> · 무대 좌/우</span><span id="mnote"></span></div><div class="mg">';
+    var h='<div class="mg">';
     ['L','R'].forEach(function(sd,i){
-      h+='<div class="mon '+sd+'" id="mon'+sd+'"><div class="lb"><b>'+(sd==='L'?'왼쪽 모니터':'오른쪽 모니터')+'</b><span id="mcap'+sd+'"></span></div><div class="scr" id="mscr'+sd+'"></div><div class="dots" id="mdot'+sd+'"></div></div>';
-      if(i===0) h+='<div class="mc"><svg width="30" height="22" viewBox="0 0 30 22"><rect x="1" y="2" width="9" height="12" rx="1.5" fill="none" stroke="#6fa8f0" stroke-width="1.5"/><rect x="20" y="2" width="9" height="12" rx="1.5" fill="none" stroke="#c58af0" stroke-width="1.5"/><rect x="12" y="8" width="6" height="8" rx="1" fill="#2e3841"/><path d="M3 20h24" stroke="#2e3841" stroke-width="2"/></svg>무대</div>';
+      h+='<div class="mon '+sd+'"><div class="scr" id="mscr'+sd+'"></div><div class="tx"><b>'+(sd==='L'?'왼쪽 모니터':'오른쪽 모니터')+'</b><span class="cp" id="mcap'+sd+'"></span><div class="dots" id="mdot'+sd+'"></div></div></div>';
+      if(i===0) h+='<div class="mc"><svg width="30" height="22" viewBox="0 0 30 22"><rect x="1" y="2" width="9" height="12" rx="1.5" fill="none" stroke="#6fa8f0" stroke-width="1.5"/><rect x="20" y="2" width="9" height="12" rx="1.5" fill="none" stroke="#c58af0" stroke-width="1.5"/><rect x="12" y="8" width="6" height="8" rx="1" fill="#2e3841"/><path d="M3 20h24" stroke="#2e3841" stroke-width="2"/></svg><span id="mnote">무대</span></div>';
     });
     B.innerHTML=h+'</div>';
     B._last={L:-2,R:-2};
@@ -472,8 +474,8 @@ function updateMons(){
     if(B._last[sd]!==c){
       B._last[sd]=c;
       var x=sl[c], scr=$('mscr'+sd);
-      scr.innerHTML=x.src?'<img src="'+esc(x.src)+'" alt="">':'<div class="ph0"><b>삽화 대기</b>'+esc(x.cap||'')+'</div>';
-      $('mcap'+sd).textContent=sl.length>1?((c+1)+' / '+sl.length+(x.cap?' · '+x.cap:'')):(x.src&&x.cap?x.cap:'');
+      scr.innerHTML=x.src?'<img src="'+esc(x.src)+'" alt="">':'<div class="ph0">삽화 대기</div>';
+      $('mcap'+sd).textContent=sl.length>1?((c+1)+'/'+sl.length+(x.cap?' · '+x.cap:'')):(x.cap||'');
       var d=''; sl.forEach(function(_,i){ d+='<i class="'+(i===c?'on':(i<c?'done':''))+'"></i>'; });
       $('mdot'+sd).innerHTML=d;
     }
@@ -483,7 +485,7 @@ function updateMons(){
     var sl=monSlides(p,sd), c=monCur(sl,e);
     if(sel===curIdx() && c+1<sl.length){ var r=Math.max(0,Math.ceil(sl[c+1].at-e)); if(!nx||r<nx.r) nx={r:r,sd:sd}; }
   });
-  $('mnote').textContent = nx ? ('다음 전환 '+(nx.sd==='L'?'왼쪽':'오른쪽')+' '+fmt(nx.r*1000)+' 후') : (sel===curIdx()?'':'미리보기');
+  $('mnote').textContent = nx ? ('전환 '+fmt(nx.r*1000)) : '무대';
 }
 
 /* ---------------- right panel ---------------- */
@@ -506,7 +508,7 @@ function render(){
   p.ppl.forEach(function(x){
     h+='<div class="p"><span class="tag '+x.side+'">'+(x.side==='L'?'왼쪽 ':'오른쪽 ')+x.r+'</span><span class="nm">'+esc(x.n)+'<span class="cg"> '+esc(x.c)+'</span></span><span class="mic'+(x.m?' on':'')+'">'+micText(x)+(x.r==='실연'?' · 앉아서':'')+'</span></div>';
   });
-  h+='</div></div><div class="box">'+stageSvg(p)+'</div></div>';
+  h+='</div></div><div class="box stagebox">'+stageSvg(p)+'</div></div>';
   h+='<div class="g2"><div class="box"><div class="shh"><span class="pill'+(show===a?' live':'')+'">'+(show===a?'지금 앵글':'미리보기')+'</span><b>'+ph.l+'</b></div>'+shotSvg(p,ph)+'<div class="note" style="margin-top:4px">'+ph.s+'</div></div>';
   h+='<div><div class="sec">카메라 앵글 진행 · 눌러서 미리보기</div><div class="cam" id="cam">';
   p.ph.forEach(function(x,i){
