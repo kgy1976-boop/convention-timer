@@ -164,6 +164,15 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   #date { white-space: nowrap; }
   .demo { margin-top: 0; white-space: nowrap; }
 }
+
+.mtabs { flex: none; display: flex; gap: 4px; }
+.mtab { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 6px 2px; min-height: 44px; border-radius: 8px; background: var(--panel2); border: 1px solid var(--line); color: var(--mute); }
+.mtab span { font-size: 11px; }
+.mtab b { font-size: 13px; font-weight: 700; white-space: nowrap; }
+.mtab[aria-selected="true"] { color: var(--fg); border-color: var(--accent); box-shadow: inset 0 -3px 0 var(--accent); }
+.mini .pi { color: var(--fg); }
+.mini .m3 { font-size: 13px; color: var(--mute); }
+.mnext .pi { color: var(--fg); }
 </style>
 </head>
 <body>
@@ -198,10 +207,10 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 <script>
 /* ---------------- data ---------------- */
 var PAGES = [
-  {k:'a1', tab:'23일 휴회 전', theme:'2027 파이오니아들과의 특별 모임 · 목표를 세워 더 의미 있게 봉사하십시오! (잠언 4:25)'},
-  {k:'a2', tab:'23일 휴회 후', theme:'2027 파이오니아들과의 특별 모임 · 목표를 세워 더 의미 있게 봉사하십시오! (잠언 4:25)'},
-  {k:'b1', tab:'25일 오전 회기', theme:'지부 대표자와 함께하는 순회 대회 · 여호와 안에서 더없이 기뻐하십시오 (시편 37:4)'},
-  {k:'b2', tab:'25일 오후 회기', theme:'지부 대표자와 함께하는 순회 대회 · 여호와 안에서 더없이 기뻐하십시오 (시편 37:4)'}
+  {k:'a1', d:'23일', s:'휴회 전', tab:'23일 휴회 전', theme:'2027 파이오니아들과의 특별 모임 · 목표를 세워 더 의미 있게 봉사하십시오! (잠언 4:25)'},
+  {k:'a2', d:'23일', s:'휴회 후', tab:'23일 휴회 후', theme:'2027 파이오니아들과의 특별 모임 · 목표를 세워 더 의미 있게 봉사하십시오! (잠언 4:25)'},
+  {k:'b1', d:'25일', s:'오전 회기', tab:'25일 오전 회기', theme:'지부 대표자와 함께하는 순회 대회 · 여호와 안에서 더없이 기뻐하십시오 (시편 37:4)'},
+  {k:'b2', d:'25일', s:'오후 회기', tab:'25일 오후 회기', theme:'지부 대표자와 함께하는 순회 대회 · 여호와 안에서 더없이 기뻐하십시오 (시편 37:4)'}
 ];
 var MC = {a1:['유상진','시흥정왕남부'], a2:['유상진','시흥정왕남부'], b1:['우지원','광명철산남부'], b2:['김동욱','시흥정왕동부']};
 var DAYS = {a:new Date(2026,9,23,0,0,0).getTime(), b:new Date(2026,9,25,0,0,0).getTime()};
@@ -410,6 +419,16 @@ function render(){
 }
 $('rbody').onclick=function(e){ var b=e.target.closest('.ph'); if(!b) return; var i=+b.dataset.ph; pv=(pv===i)?null:i; render(); };
 
+function partStr(p){
+  var L=p.ppl.filter(function(x){return x.side==='L';}).length, Rn=p.ppl.filter(function(x){return x.side==='R';}).length, a=[];
+  if(L) a.push('실연 '+L+'명(왼쪽)'); if(Rn) a.push('회견자 '+Rn+'명(오른쪽)');
+  return a.join(', ');
+}
+function partNames(p){
+  var L=p.ppl.filter(function(x){return x.side==='L';}).map(function(x){return x.n;}), Rn=p.ppl.filter(function(x){return x.side==='R';}).map(function(x){return x.n;}), a=[];
+  if(L.length) a.push('실연 '+L.join('·')); if(Rn.length) a.push('회견자 '+Rn.join('·'));
+  return a.join(' / ');
+}
 /* next-program footer (skeleton is built once per program so taps are not interrupted by the clock refresh) */
 var footKey=null;
 function updateFoot(){
@@ -418,7 +437,7 @@ function updateFoot(){
   var q=D[ni];
   if(footKey!==ni){
     footKey=ni;
-    var cnt=''; if(q.ppl.length){ var a=q.ppl.filter(function(x){return x.r==='회견';}).length, b=q.ppl.length-a; cnt=' · '+(a?'회견 '+a+'명':'')+(a&&b?' ':'')+(b?'실연 '+b+'명':''); }
+    var cnt=partStr(q)?' ('+partStr(q)+')':'';
     f.innerHTML='<button class="nx" id="nxbtn"><div class="sec">다음 프로그램 · '+kt(q.t)+' 시작</div><div class="n">'+(q.no?q.no+'. ':'')+esc(q.title)+'</div><div class="s">'+(q.who?esc(q.who)+' · '+esc(q.cong):(q.mc?'사회 '+esc(q.mc):''))+cnt+'</div></button>'
      +'<div class="cd"><div class="big" id="fcd">00:00</div><div class="s" id="ftx"></div></div><div class="cdbar"><i id="fbar"></i></div>';
     $('nxbtn').onclick=function(){ sel=ni; follow=(ni===curIdx()); pv=null; if(D[ni].pg!==pg) setPage(D[ni].pg); else scrollNeeded=true; render(); tick(true); };
@@ -439,13 +458,15 @@ function updateMini(){
   if(miniKey!==key){
     miniKey=key;
     var e=new Date(p.end), who=p.who?'<b>'+esc(p.who)+'</b> · '+esc(p.cong):(p.mc?'사회 <b>'+esc(p.mc)+'</b>':'');
-    M.innerHTML='<div class="mmain"><div class="mtop"><span class="pill" id="mpill">-</span>'+(mview!==null?'<button class="mback" id="mback">↩ 지금으로 돌아가기</button>':'')+'</div>'
+    var tabs='<div class="mtabs" role="tablist">'+PAGES.map(function(g){ return '<button class="mtab" role="tab" data-k="'+g.k+'" aria-selected="'+(g.k===p.pg?'true':'false')+'"><span>'+g.d+'</span><b>'+g.s+'</b></button>'; }).join('')+'</div>';
+    var ps=partStr(p), pn=partNames(p), qs=q?partStr(q):'';
+    M.innerHTML=tabs+'<div class="mmain"><div class="mtop"><span class="pill" id="mpill">-</span>'+(mview!==null?'<button class="mback" id="mback">↩ 지금으로 돌아가기</button>':'')+'</div>'
       +'<h2>'+(p.no?p.no+'. ':'')+esc(p.title)+'</h2>'
       +'<div class="m2">'+kt(p.t)+' ~ '+kt(pad(e.getHours())+':'+pad(e.getMinutes()))+' · '+p.len+'분</div>'
-      +'<div class="m2">'+who+'</div>'
+      +'<div class="m2">'+who+(ps?' <span class="pi">('+ps+')</span>':'')+'</div>'+(pn?'<div class="m3">'+esc(pn)+'</div>':'')
       +'<div class="mbar"><i id="mbar"></i></div>'
       +'<div class="mrow"><span id="mbl"></span><b class="big" id="mbig">00:00</b><span id="mpc"></span></div></div>'
-      +(q?'<button class="mnext" data-i="'+(idx+1)+'"><span class="sec">다음 프로그램 · '+kt(q.t)+' 시작 ›</span><b>'+(q.no?q.no+'. ':'')+esc(q.title)+'</b><span class="m2">'+(q.who?esc(q.who)+' · '+esc(q.cong):(q.mc?'사회 '+esc(q.mc):''))+'</span><span class="mncd" id="mncd"></span></button>'
+      +(q?'<button class="mnext" data-i="'+(idx+1)+'"><span class="sec">다음 프로그램 · '+kt(q.t)+' 시작 ›</span><b>'+(q.no?q.no+'. ':'')+esc(q.title)+'</b><span class="m2">'+(q.who?esc(q.who)+' · '+esc(q.cong):(q.mc?'사회 '+esc(q.mc):''))+(qs?' <span class="pi">('+qs+')</span>':'')+'</span><span class="mncd" id="mncd"></span></button>'
           :'<div class="mnext end"><span class="sec">다음 프로그램</span><b>없음 · 오늘 마지막 프로그램</b></div>');
   }
   var st, bl, big, pct;
@@ -458,6 +479,12 @@ function updateMini(){
   if(q){ var r=q.start-n; $('mncd').textContent=r>0?('시작까지 '+fmt(r)):(n<q.end?'진행 중':'종료'); }
 }
 $('mini').onclick=function(e){
+  var t=e.target.closest('.mtab');
+  if(t&&t.dataset.k){
+    var ci=curIdx(), k=t.dataset.k, first=-1, i;
+    for(i=0;i<D.length;i++) if(D[i].pg===k){ first=i; break; }
+    mview=(ci>=0&&D[ci].pg===k)?null:first; miniKey=null; updateMini(); return;
+  }
   var b=e.target.closest('.mnext');
   if(b&&b.dataset.i){ mview=+b.dataset.i; miniKey=null; updateMini(); return; }
   if(e.target.closest('.mback')){ mview=null; miniKey=null; updateMini(); }
