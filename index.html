@@ -109,7 +109,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .mon.L .scr { border-color: color-mix(in srgb, var(--left) 60%, var(--line)); }
 .mon.R .scr { border-color: color-mix(in srgb, var(--right) 60%, var(--line)); }
 .mon .scr img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #000; }
-.mon .scr .ph0 { font-size: 11px; color: var(--mute); }
+.mon .scr .ph0 { font-size: 14px; font-weight: 700; color: var(--fg); line-height: 1.25; padding: 0 4px; }
 .mon .dots { display: flex; gap: 3px; }
 .mon.R .dots { justify-content: flex-end; }
 .mon .dots i { width: 12px; height: 4px; border-radius: 2px; background: var(--line); }
@@ -482,7 +482,7 @@ function monSlides(p, side){
   var k = p.pg+'-'+(p.no||'');
   if(MONS[k] && MONS[k][side]) return MONS[k][side];
   /* 자료가 올라오기 전: 자리표시자(모니터 기본 화면) */
-  return [{at:0, cap:(side==='L'?'왼쪽':'오른쪽')+' 모니터 자료 대기'}];
+  return [{at:0, label:(side==='L'?'2026년 연표':'대회주제'), cap:''}];
 }
 function monCur(sl, e){ var a=0; sl.forEach(function(x,i){ if(e>=x.at) a=i; }); return a; }
 var monKey='';
@@ -508,7 +508,7 @@ function updateMons(){
     if(B._last[sd]!==c){
       B._last[sd]=c;
       var x=sl[c], scr=$('mscr'+sd);
-      scr.innerHTML=x.src?'<img src="'+esc(x.src)+'" alt="">':'<div class="ph0">삽화 대기</div>';
+      scr.innerHTML=x.src?'<img src="'+esc(x.src)+'" alt="">':'<div class="ph0">'+esc(x.label||'삽화 대기')+'</div>';
       $('mcap'+sd).textContent=sl.length>1?((c+1)+'/'+sl.length+(x.cap?' · '+x.cap:'')):(x.cap||'');
       var d=''; sl.forEach(function(_,i){ d+='<i class="'+(i===c?'on':(i<c?'done':''))+'"></i>'; });
       $('mdot'+sd).innerHTML=d;
