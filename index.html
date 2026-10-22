@@ -671,8 +671,6 @@ $('reset').onclick=function(){ sw={run:false,t0:0,acc:0}; tick(true); };
   };
   function hint(){ alert('이 브라우저는 전체화면 전환을 지원하지 않습니다.\n공유 버튼(□↑) → "홈 화면에 추가"로 추가한 뒤 그 아이콘으로 열면 주소창 없이 전체화면으로 보입니다.'); }
   document.addEventListener('fullscreenchange',sync); document.addEventListener('webkitfullscreenchange',sync);
-  var st=window.navigator.standalone||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches);
-  if(st) b.style.display='none';
 })();
 $('demo').onclick=function(){
   var k=demoIdx+1; k=(k+1)%(PRESETS.length+1); demoIdx=k-1;
