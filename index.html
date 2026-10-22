@@ -3,6 +3,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="color-scheme" content="dark">
 <title>대회 진행 타이머</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+KR:wght@400;500;700&display=swap">
@@ -37,6 +39,8 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .clock .ap { font: 700 .36em var(--sans); color: var(--accent); margin-right: 8px; letter-spacing: 0; }
 .meta { text-align: right; color: var(--mute); font-size: 13px; }
 .demo { margin-top: 4px; padding: 4px 10px; border-radius: 99px; background: var(--panel2); color: var(--accent); font-size: 12px; border: 1px solid var(--line); }
+.mbtns { display: inline-flex; gap: 6px; }
+.demo.fsb { color: var(--fg); }
 .demo[aria-pressed="false"] { color: var(--mute); }
 .swrow { display: flex; align-items: center; gap: 10px; border-top: 1px solid var(--line); padding-top: 8px; }
 .swlabel { min-width: 0; flex: 1 1 auto; font-size: 13px; color: var(--mute); }
@@ -248,7 +252,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
     <div class="top" id="top">
       <div class="clockrow">
         <div class="clock" id="clock" aria-label="현재 시각">--:--:--</div>
-        <div class="meta"><div id="date">-</div><button class="demo" id="demo" aria-pressed="false">시연 모드</button></div>
+        <div class="meta"><div id="date">-</div><span class="mbtns"><button class="demo" id="fs" type="button">전체화면</button><button class="demo" id="demo" aria-pressed="false">시연 모드</button></span></div>
       </div>
       <div class="swbar"><i id="swbar"></i></div>
       <div class="swrow">
@@ -627,6 +631,24 @@ function tick(force){
 
 $('start').onclick=function(){ if(sw.run){ sw.acc+=Date.now()-sw.t0; sw.run=false; } else { sw.t0=Date.now(); sw.run=true; } tick(); };
 $('reset').onclick=function(){ sw={run:false,t0:0,acc:0}; tick(true); };
+/* fullscreen */
+(function(){
+  var el=document.documentElement, b=$('fs');
+  var req=el.requestFullscreen||el.webkitRequestFullscreen, ex=document.exitFullscreen||document.webkitExitFullscreen;
+  function isFs(){ return !!(document.fullscreenElement||document.webkitFullscreenElement); }
+  function sync(){ b.textContent=isFs()?'전체화면 끄기':'전체화면'; }
+  b.classList.add('fsb');
+  b.onclick=function(){
+    try{
+      if(isFs()){ ex.call(document); return; }
+      if(req){ var r=req.call(el); if(r&&r.catch) r.catch(hint); } else hint();
+    }catch(e){ hint(); }
+  };
+  function hint(){ alert('이 브라우저는 전체화면 전환을 지원하지 않습니다.\n공유 버튼(□↑) → "홈 화면에 추가"로 추가한 뒤 그 아이콘으로 열면 주소창 없이 전체화면으로 보입니다.'); }
+  document.addEventListener('fullscreenchange',sync); document.addEventListener('webkitfullscreenchange',sync);
+  var st=window.navigator.standalone||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches);
+  if(st) b.style.display='none';
+})();
 $('demo').onclick=function(){
   var k=demoIdx+1; k=(k+1)%(PRESETS.length+1); demoIdx=k-1;
   if(demoIdx>=0){ demoBase=PRESETS[demoIdx].t; demoStart=Date.now(); }
