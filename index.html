@@ -482,7 +482,7 @@ function monSlides(p, side){
   var k = p.pg+'-'+(p.no||'');
   if(MONS[k] && MONS[k][side]) return MONS[k][side];
   /* 자료가 올라오기 전: 자리표시자(모니터 기본 화면) */
-  return [{at:0, label:(side==='L'?'2026년 연표':'대회주제'), cap:''}];
+  return [side==='L'?{at:0, label:'2026년 연표', cap:'2026년 연표', src:'img/yeartext.jpg'}:{at:0, label:'대회주제', cap:'대회주제', src:'img/theme.jpg'}];
 }
 function monCur(sl, e){ var a=0; sl.forEach(function(x,i){ if(e>=x.at) a=i; }); return a; }
 var monKey='';
