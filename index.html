@@ -133,6 +133,25 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .sec { font-size: 12px; color: var(--mute); letter-spacing: .06em; margin-bottom: 6px; }
 .people { display: grid; gap: 6px; }
 .p { display: grid; grid-template-columns: auto minmax(0,1fr); grid-template-areas: "t n" "t m"; gap: 0 8px; align-items: center; background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; }
+.achip { display: inline-block; margin-left: 4px; padding: 0 6px; border-radius: 99px; background: var(--accent); color: var(--onacc); font-size: 11px; font-weight: 700; line-height: 1.5; }
+.aud { background: var(--panel2); border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 8px; padding: 8px 10px; display: grid; gap: 6px; }
+.aud .ah { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 13px; }
+.aud .ah b { color: var(--accent); }
+.aud .ah span { font-size: 12px; color: var(--mute); }
+.aud .ord { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.aud .ord span { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 99px; border: 1px solid var(--line); }
+.aud .ord .au { background: var(--accent); color: var(--onacc); border-color: var(--accent); }
+.aud .ord .iv { color: var(--right); border-color: var(--right); }
+.aud .ord .dm { color: var(--left); border-color: var(--left); }
+.aud .ord em { font-style: normal; color: var(--mute); }
+.aud .ai { display: grid; grid-template-columns: 62px minmax(0,1fr); gap: 8px; align-items: start; padding: 4px 6px; border-radius: 6px; }
+.aud .ai .at { font: 600 13px var(--mono); color: var(--mute); }
+.aud .ai .aq { font-size: 12.5px; line-height: 1.4; color: var(--mute); display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.aud .ai .aq b { color: var(--fg); }
+.aud .ai.nx { background: color-mix(in srgb, var(--accent) 18%, transparent); outline: 1px solid var(--accent); }
+.aud .ai.nx .at { color: var(--accent); }
+.aud .ai.nx .aq { color: var(--fg); -webkit-line-clamp: 4; }
+.aud .ai.dn { opacity: .5; }
 .sides { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 10px; align-items: start; }
 .sd { display: grid; gap: 6px; }
 .sh { font-size: 12px; font-weight: 700; letter-spacing: .04em; padding-bottom: 2px; border-bottom: 2px solid var(--line); }
@@ -165,7 +184,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 @media (prefers-reduced-motion: no-preference) { .row .fill { transition: width .6s linear; } }
 
 /* ---------- compact (phone): clock + stopwatch + current program only ---------- */
-.mini { display: none; flex-direction: column; justify-content: center; gap: 10px; min-height: 0; min-width: 0; overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+.mini { display: none; flex-direction: column; justify-content: flex-start; gap: 10px; min-height: 0; min-width: 0; overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
 .mini .pill { align-self: flex-start; }
 .mini h2 { margin: 0; font-size: 22px; line-height: 1.3; text-wrap: balance; }
 .mini .m2 { font-size: 14px; color: var(--mute); }
@@ -357,6 +376,19 @@ var D = [
   it('b2','15:10',44,'11','여호와를 하느님으로 모시는 백성은 행복합니다!','이건웅','지부 대표자',[],null),
   it('b2','15:55',5,'','노래 161번 및 기도','이건웅','지부 대표자')
 ];
+/* 23일 파이오니아 모임: 청중 해설 참여 (순회 대회는 해당 없음) */
+var AUD = {
+  'a1-2': {order:['청중 참여','회견','청중 참여','실연'], items:[
+    {at:240, l:'질문 1', q:'성공적으로 봉사한 많은 파이오니아들은 다양한 시간대에 봉사하기 위해 자신의 일과를 조정해 왔다. 이 자리에 계신 분들도 그렇게 해오셨을 것 → 그 점과 관련된 질문을 드리겠다.'},
+    {at:660, l:'질문 2', q:'어떤 지역에서는 공원, 거리와 같은 장소들을 잘 활용한다. 산책이나 가족과 나들이를 나온 사람들 → 보통 마음의 여유가 있다. 더 기꺼이 대화하려고 하는 장소 → 우리는 대화를 시작하기가 더 쉬울 수 있다.'}]},
+  'a1-4': {order:['회견','실연','청중 참여'], items:[
+    {at:1020, l:'질문 1 · 실연 직후', q:'실연을 보신 뒤, “이 대화에서 어떤 점이 좋았습니까?”라는 질문을 함께 생각해 보겠습니다.'}]},
+  'a2-6': {order:['청중 참여','회견'], items:[
+    {at:240, l:'질문 (3가지)', q:'이러한 방법은 호별 봉사에서도 효과적일 수 있습니다… 두 시간 만에 15건의 새로운 성서 연구가 시작되었습니다. 직접 제안 방법이 정말 효과적이라는 것이 증명된 것이죠. 그러면 이와 관련해서 세 가지 질문을 드리겠습니다.'}]},
+  'a2-9': {order:['회견','청중 참여'], items:[
+    {at:720, l:'질문 1', q:'회중에서 다른 사람에게 받은 훈련으로부터 어떤 유익을 얻었습니까?'}]}
+};
+D.forEach(function(p){ var a=AUD[p.pg+'-'+p.no]; if(a) p.aud=a; });
 D.forEach(function(p){ var a=p.t.split(':'); p.start=DAYS[p.day]+(+a[0]*60+ +a[1])*60000; p.end=p.start+p.len*60000; });
 
 /* ---------------- helpers ---------------- */
@@ -413,7 +445,7 @@ function buildRows(){
     if(p.pg!==pg) return;
     if(p.grp) h+='<div class="grp">'+esc(p.grp)+'</div>';
     h+='<button class="row" data-i="'+i+'"><span class="fill"></span><span class="t">'+ktHtml(p.t)+'</span><span class="l">'+p.len+'분</span>'
-     +'<span><span class="n">'+(p.no?p.no+'. ':'')+esc(p.title)+'</span><br><span class="s">'+(p.who?esc(p.who)+' · '+esc(p.cong):(p.mc?'사회 '+esc(p.mc):'&nbsp;'))+'</span></span><span class="pc"></span></button>';
+     +'<span><span class="n">'+(p.no?p.no+'. ':'')+esc(p.title)+'</span><br><span class="s">'+(p.who?esc(p.who)+' · '+esc(p.cong):(p.mc?'사회 '+esc(p.mc):'&nbsp;'))+(p.aud?' <span class="achip">청중 참여 '+p.aud.items.length+'회</span>':'')+'</span></span><span class="pc"></span></button>';
   });
   $('rows').innerHTML=h;
   $('rows').onclick=function(e){ var b=e.target.closest('.row'); if(!b) return; sel=+b.dataset.i; follow=(sel===curIdx()); pv=null; render(); tick(true); };
@@ -485,6 +517,13 @@ function monSlides(p, side){
   return [side==='L'?{at:0, label:'2026년 연표', cap:'2026년 연표', src:'img/yeartext.jpg'}:{at:0, label:'대회주제', cap:'대회주제', src:'img/theme.jpg'}];
 }
 function monCur(sl, e){ var a=0; sl.forEach(function(x,i){ if(e>=x.at) a=i; }); return a; }
+function updateAud(){
+  var A=$('aud'); if(!A) return;
+  var p=D[sel], live=(sel===curIdx()), e=live?Math.max(0,(now()-p.start)/1000):-1, nx=-1;
+  var its=A.querySelectorAll('.ai');
+  if(live) for(var i=0;i<its.length;i++){ if(e<+its[i].dataset.at+45){ nx=i; break; } }
+  Array.prototype.forEach.call(its,function(el,i){ el.classList.toggle('nx',live&&i===nx); el.classList.toggle('dn',live&&(nx<0||i<nx)); });
+}
 var monKey='';
 function updateMons(){
   var B=$('mons'), p=D[sel];
@@ -551,6 +590,11 @@ function render(){
     var Ls=p.ppl.filter(function(x){return x.side==='L';}), Rs=p.ppl.filter(function(x){return x.side==='R';});
     h+='<div class="sides"><div class="sd L">'+(Ls.length?'<div class="sh L">왼쪽 · 실연 '+Ls.length+'명</div>'+Ls.map(card).join(''):'')+'</div><div class="sd R">'+(Rs.length?'<div class="sh R">오른쪽 · 회견 '+Rs.length+'명</div>'+Rs.map(card).join(''):'')+'</div></div>';
   }
+  if(p.aud){
+    h+='<div class="aud" id="aud"><div class="ah"><b>청중 해설 참여</b><span>총 '+p.aud.items.length+'번 · 순서</span></div><div class="ord">'
+      +p.aud.order.map(function(o,i){ return (i?'<em>›</em>':'')+'<span class="'+(o==='청중 참여'?'au':(o==='회견'?'iv':'dm'))+'">'+o+'</span>'; }).join('')+'</div>'
+      +p.aud.items.map(function(x,i){ return '<div class="ai" data-at="'+x.at+'"><span class="at">'+fmt(x.at*1000)+'경</span><span class="aq"><b>'+esc(x.l)+'</b> '+esc(x.q)+'</span></div>'; }).join('')+'</div>';
+  }
   h+='<div class="g2"><div class="box"><div class="shh"><span class="pill'+(show===a?' live':'')+'">'+(show===a?'지금 앵글':'미리보기')+'</span><b>'+ph.l+'</b></div>'+shotSvg(p,ph)+'<div class="note" style="margin-top:4px">'+ph.s+'</div></div>';
   h+='<div><div class="sec">카메라 앵글 진행 · 눌러서 미리보기</div><div class="cam" id="cam">';
   p.ph.forEach(function(x,i){
@@ -607,7 +651,7 @@ function updateMini(){
     M.innerHTML=tabs+'<div class="mmain"><div class="mtop"><span class="pill" id="mpill">-</span>'+(mview!==null?'<button class="mback" id="mback">↩ 지금으로 돌아가기</button>':'')+'</div>'
       +'<h2>'+(p.no?p.no+'. ':'')+esc(p.title)+'</h2>'
       +'<div class="m2">'+kt(p.t)+' ~ '+kt(pad(e.getHours())+':'+pad(e.getMinutes()))+' · '+p.len+'분</div>'
-      +'<div class="m2">'+who+(ps?' <span class="pi">('+ps+')</span>':'')+'</div>'+(pn?'<div class="m3">'+esc(pn)+'</div>':'')
+      +'<div class="m2">'+who+(ps?' <span class="pi">('+ps+')</span>':'')+(p.aud?' <span class="achip">청중 참여 '+p.aud.items.length+'회</span>':'')+'</div>'+(pn?'<div class="m3">'+esc(pn)+'</div>':'')
       +'<div class="mbar"><i id="mbar"></i></div>'
       +'<div class="mrow"><span id="mbl"></span><b class="big" id="mbig">00:00</b><span id="mpc"></span></div></div>'
       +(q?'<button class="mnext" data-i="'+(idx+1)+'"><span class="sec">다음 프로그램 · '+kt(q.t)+' 시작 ›</span><b>'+(q.no?q.no+'. ':'')+esc(q.title)+'</b><span class="m2">'+(q.who?esc(q.who)+' · '+esc(q.cong):(q.mc?'사회 '+esc(q.mc):''))+(qs?' <span class="pi">('+qs+')</span>':'')+'</span><span class="mncd" id="mncd"></span></button>'
@@ -651,7 +695,7 @@ function tick(force){
   $('swbar').style.background=ms>target?'var(--warn)':'var(--accent)';
   $('start').textContent=sw.run?'정지':(ms>0?'계속':'시작'); $('start').className='btn '+(sw.run?'stop':'go');
   if(!p.brk){ var a=activePhase(p); if(a!==lastA||sel!==lastSel||force){ if(sel!==lastSel) pv=null; lastA=a; lastSel=sel; render(); } }
-  updateRows(); updateMons(); updateFoot(); updateMini();
+  updateRows(); updateMons(); updateAud(); updateFoot(); updateMini();
 }
 
 $('start').onclick=function(){ if(sw.run){ sw.acc+=Date.now()-sw.t0; sw.run=false; } else { sw.t0=Date.now(); sw.run=true; } tick(); };
