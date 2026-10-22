@@ -133,6 +133,13 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .sec { font-size: 12px; color: var(--mute); letter-spacing: .06em; margin-bottom: 6px; }
 .people { display: grid; gap: 6px; }
 .p { display: grid; grid-template-columns: auto minmax(0,1fr); grid-template-areas: "t n" "t m"; gap: 0 8px; align-items: center; background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; }
+.sides { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 10px; align-items: start; }
+.sd { display: grid; gap: 6px; }
+.sh { font-size: 12px; font-weight: 700; letter-spacing: .04em; padding-bottom: 2px; border-bottom: 2px solid var(--line); }
+.sh.L { color: var(--left); border-color: var(--left); }
+.sh.R { color: var(--right); border-color: var(--right); text-align: right; }
+.sd.R .p { border-right: 3px solid var(--right); }
+.sd.L .p { border-left: 3px solid var(--left); }
 .p .nm { grid-area: n; font-weight: 700; font-size: 14px; }
 .p .tag { grid-area: t; align-self: center; }
 .p .cg { font-size: 12px; color: var(--mute); font-weight: 400; }
@@ -533,10 +540,12 @@ function render(){
   h+='<div class="g2"><div><div class="sec">사회자 · 연사 · 참여자</div><div class="people">';
   if(p.mc) h+='<div class="p"><span class="tag C">사회자</span><span class="nm">'+esc(p.mc)+'<span class="cg"> '+esc(p.mcc)+'</span></span><span class="mic on">유선 마이크 · 번호 확인</span></div>';
   if(p.who) h+='<div class="p"><span class="tag C">연사</span><span class="nm">'+esc(p.who)+'<span class="cg"> '+esc(p.cong)+'</span></span><span class="mic">중앙 연단</span></div>';
-  p.ppl.forEach(function(x){
-    h+='<div class="p"><span class="tag '+x.side+'">'+(x.side==='L'?'왼쪽 ':'오른쪽 ')+x.r+'</span><span class="nm">'+esc(x.n)+'<span class="cg"> '+esc(x.c)+'</span></span><span class="mic'+(x.m?' on':'')+'">'+micText(x)+(x.r==='실연'?' · 앉아서':'')+'</span></div>';
-  });
   h+='</div></div><div class="box stagebox">'+stageSvg(p)+'</div></div>';
+  if(p.ppl.length){
+    function card(x){ return '<div class="p"><span class="tag '+x.side+'">'+x.r+'</span><span class="nm">'+esc(x.n)+'<span class="cg"> '+esc(x.c)+'</span></span><span class="mic'+(x.m?' on':'')+'">'+micText(x)+(x.r==='실연'?' · 앉아서':'')+'</span></div>'; }
+    var Ls=p.ppl.filter(function(x){return x.side==='L';}), Rs=p.ppl.filter(function(x){return x.side==='R';});
+    h+='<div class="sides"><div class="sd L"><div class="sh L">왼쪽 · 실연 '+Ls.length+'명</div>'+Ls.map(card).join('')+'</div><div class="sd R"><div class="sh R">오른쪽 · 회견 '+Rs.length+'명</div>'+Rs.map(card).join('')+'</div></div>';
+  }
   h+='<div class="g2"><div class="box"><div class="shh"><span class="pill'+(show===a?' live':'')+'">'+(show===a?'지금 앵글':'미리보기')+'</span><b>'+ph.l+'</b></div>'+shotSvg(p,ph)+'<div class="note" style="margin-top:4px">'+ph.s+'</div></div>';
   h+='<div><div class="sec">카메라 앵글 진행 · 눌러서 미리보기</div><div class="cam" id="cam">';
   p.ph.forEach(function(x,i){
