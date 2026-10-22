@@ -123,6 +123,33 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .note { font-size: 12.5px; color: var(--mute); }
 .cue { font-size: 12.5px; color: var(--fg); background: var(--panel2); border: 1px dashed var(--line); border-radius: 8px; padding: 7px 10px; }
 @media (prefers-reduced-motion: no-preference) { .row .fill { transition: width .6s linear; } }
+
+/* ---------- compact (phone): clock + stopwatch + current program only ---------- */
+.mini { display: none; flex-direction: column; justify-content: center; gap: 10px; min-height: 0; min-width: 0; overflow: hidden; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+.mini .pill { align-self: flex-start; }
+.mini h2 { margin: 0; font-size: 22px; line-height: 1.3; text-wrap: balance; }
+.mini .m2 { font-size: 14px; color: var(--mute); }
+.mini .m2 b { color: var(--fg); font-weight: 700; }
+.mbar { height: 12px; border-radius: 6px; background: var(--bg); overflow: hidden; }
+.mbar i { display: block; height: 100%; background: var(--accent); }
+.mrow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--mute); }
+.mrow .big { font: 600 34px/1 var(--mono); font-variant-numeric: tabular-nums; color: var(--accent); }
+.mrow .big.low { color: var(--warn); }
+@media (max-width: 720px), (max-height: 500px) {
+  .app { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); }
+  #left { display: contents; }
+  .split, .list, .right { display: none; }
+  .top { flex: none; min-height: 0; gap: 10px; }
+  .clock { font-size: min(13.5vw, 13vh, 64px); }
+  .swrow { flex-wrap: wrap; row-gap: 6px; }
+  .swlabel { flex: 1 1 100%; }
+  .sw { font-size: min(13vw, 12vh, 48px); }
+  .btns { margin-left: auto; }
+  .mini { display: flex; }
+}
+@media ((max-width: 720px) or (max-height: 500px)) and (min-aspect-ratio: 1/1) {
+  .app { grid-template-columns: 1fr 1fr; grid-template-rows: minmax(0, 1fr); }
+}
 </style>
 </head>
 <body>
@@ -151,6 +178,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
     </div>
   </section>
   <section class="col right" id="right"><div class="rbody" id="rbody"></div><div class="foot" id="foot"></div></section>
+  <section class="mini" id="mini" aria-live="off"></section>
 </div>
 
 <script>
@@ -381,6 +409,22 @@ function updateFoot(){
   $('nxbtn').onclick=function(){ sel=ni; follow=(ni===curIdx()); pv=null; if(D[ni].pg!==pg) setPage(D[ni].pg); else scrollNeeded=true; render(); tick(true); };
 }
 
+/* compact (phone) view */
+function updateMini(){
+  var ci=curIdx(), ni=nextIdx(), n=now(), p, lab, big, bl, pct=0, M=$('mini');
+  if(ci>=0){ p=D[ci]; lab='진행 중'; bl='남은 시간'; big=p.end-n; pct=Math.min(100,(n-p.start)/(p.end-p.start)*100); }
+  else if(ni>=0){ p=D[ni]; lab='다음 프로그램'; bl='시작까지'; big=p.start-n; }
+  else { M.innerHTML='<div class="m2">프로그램이 모두 끝났습니다.</div>'; return; }
+  var e=new Date(p.end), who=p.who?'<b>'+esc(p.who)+'</b> · '+esc(p.cong):(p.mc?'사회 <b>'+esc(p.mc)+'</b>':'');
+  var low=big<60000;
+  M.innerHTML='<span class="pill'+(ci>=0?' live':'')+'">'+lab+'</span>'
+    +'<h2>'+(p.no?p.no+'. ':'')+esc(p.title)+'</h2>'
+    +'<div class="m2">'+kt(p.t)+' ~ '+kt(pad(e.getHours())+':'+pad(e.getMinutes()))+' · '+p.len+'분</div>'
+    +'<div class="m2">'+who+'</div>'
+    +'<div class="mbar"><i style="width:'+pct+'%"></i></div>'
+    +'<div class="mrow"><span>'+bl+'</span><b class="big'+(low?' low':'')+'">'+fmt(Math.max(0,big))+'</b><span>'+(ci>=0?Math.floor(pct)+'%':'')+'</span></div>';
+}
+
 /* ---------------- main loop ---------------- */
 var lastA=-1,lastSel=-1;
 function tick(force){
@@ -398,7 +442,7 @@ function tick(force){
   $('swbar').style.background=ms>target?'var(--warn)':'var(--accent)';
   $('start').textContent=sw.run?'정지':(ms>0?'계속':'시작'); $('start').className='btn '+(sw.run?'stop':'go');
   if(!p.brk){ var a=activePhase(p); if(a!==lastA||sel!==lastSel||force){ if(sel!==lastSel) pv=null; lastA=a; lastSel=sel; render(); } }
-  updateRows(); updateFoot();
+  updateRows(); updateFoot(); updateMini();
 }
 
 $('start').onclick=function(){ if(sw.run){ sw.acc+=Date.now()-sw.t0; sw.run=false; } else { sw.t0=Date.now(); sw.run=true; } tick(); };
