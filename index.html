@@ -60,8 +60,13 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .btn { height: 44px; min-width: 76px; border-radius: 8px; font-weight: 700; background: var(--panel2); border: 1px solid var(--line); }
 .btn.go { background: var(--accent); color: var(--onacc); border-color: var(--accent); }
 .btn.stop { background: var(--warn); color: #1d0907; border-color: var(--warn); }
-.swbar { height: 5px; border-radius: 3px; background: var(--panel2); overflow: hidden; }
-.swbar i { display: block; height: 100%; width: 0; background: var(--accent); }
+.swbar { position: relative; height: 6px; border-radius: 3px; background: var(--panel2); }
+.swbar i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 3px; }
+.swpl { position: absolute; top: -4px; bottom: -4px; left: 0; width: 3px; margin-left: -1px; border-radius: 2px; background: var(--fg); opacity: .9; pointer-events: none; }
+.swgap { min-height: 18px; font-size: 13px; font-weight: 700; color: var(--mute); }
+.swgap.late, .mgap.late, .nx .s.late { color: var(--warn); }
+.swgap.early, .mgap.early, .nx .s.early { color: var(--ok); }
+.mgap { font-size: 13px; font-weight: 700; color: var(--mute); }
 
 .split { flex: 0 0 18px; display: grid; place-items: center; cursor: row-resize; touch-action: none; }
 .split::before { content: ""; width: 64px; height: 5px; border-radius: 3px; background: var(--line); }
@@ -78,6 +83,14 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .row .fill { position: absolute; inset: 0 auto 0 0; width: var(--p, 0%); background: var(--accent-dim); }
 .row.done .fill { background: var(--done); }
 .row > :not(.fill) { position: relative; }
+.row > .act { position: absolute; left: 0; bottom: 0; height: 5px; width: var(--a, 0%); background: var(--ok); opacity: 0; }
+.row > .act.on { opacity: 1; }
+.row > .act.over { background: var(--warn); }
+.row .pc { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; }
+.row .pc .dl { font: 700 11.5px var(--mono); white-space: nowrap; }
+.dl.late { color: var(--warn); }
+.dl.early { color: var(--ok); }
+.dl.ok { color: var(--mute); }
 .row .t { font: 600 14.5px var(--mono); font-variant-numeric: tabular-nums; }
 .row .t i { font: 500 11px var(--sans); font-style: normal; color: var(--mute); margin-right: 3px; }
 .row .l { font-size: 12px; color: var(--mute); }
@@ -181,7 +194,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .ph.act .at { color: var(--accent); }
 .note { font-size: 12.5px; color: var(--mute); }
 .cue { font-size: 12.5px; color: var(--fg); background: var(--panel2); border: 1px dashed var(--line); border-radius: 8px; padding: 7px 10px; }
-@media (prefers-reduced-motion: no-preference) { .row .fill { transition: width .6s linear; } }
+@media (prefers-reduced-motion: no-preference) { .row .fill, .row > .act { transition: width .6s linear; } }
 
 /* ---------- compact (phone): clock + stopwatch + current program only ---------- */
 .mini { display: none; flex-direction: column; justify-content: flex-start; gap: 10px; min-height: 0; min-width: 0; overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
@@ -191,6 +204,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .mini .m2 b { color: var(--fg); font-weight: 700; }
 .mbar { height: 12px; border-radius: 6px; background: var(--bg); overflow: hidden; }
 .mbar i { display: block; height: 100%; background: var(--accent); }
+.mbar.sm { height: 7px; margin-top: -4px; }
 .mrow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--mute); }
 .mrow .big { font: 600 34px/1 var(--mono); font-variant-numeric: tabular-nums; color: var(--accent); }
 .mrow .big.low { color: var(--warn); }
@@ -244,6 +258,8 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .demo { padding: 3px 8px; font-size: 11px; }
   .swlabel { font-size: 11px; }
   .swlabel b { font-size: 12px; }
+  .swgap, .mgap { font-size: 11px; min-height: 14px; }
+  .mbar.sm { height: 5px; margin-top: -2px; }
   .sw { font-size: min(5.4vw, 12vh, 34px); }
   .btn { height: 36px; min-width: 54px; font-size: 13px; }
   .mini { padding: 8px 10px; gap: 6px; }
@@ -286,9 +302,9 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
     <div class="top" id="top">
       <div class="clockrow">
         <div class="clock" id="clock" aria-label="현재 시각">--:--:--</div>
-        <div class="meta"><div id="date">-</div><span class="mbtns"><button class="demo fsb" id="thm" type="button">밝게</button><button class="demo" id="fs" type="button">전체화면</button><button class="demo" id="demo" aria-pressed="false">시연 모드</button></span></div>
+        <div class="meta"><div id="date">-</div><span class="mbtns"><button class="demo fsb" id="thm" type="button">밝게</button><button class="demo" id="fs" type="button">전체화면</button><button class="demo" id="swdel" type="button" hidden>기록 삭제</button><button class="demo" id="demo" aria-pressed="false">시연 모드</button></span></div>
       </div>
-      <div class="swbar"><i id="swbar"></i></div>
+      <div class="swbar" title="막대: 실제 진행 / 흰 선: 계획상 위치"><i id="swbar"></i><b class="swpl" id="swpl"></b></div>
       <div class="swrow">
         <div class="swlabel">스톱워치 · 배정 <span id="swtarget">15:00</span><b id="swname">-</b></div>
         <div class="sw" id="sw">00:00</div>
@@ -297,6 +313,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
           <button class="btn" id="reset">리셋</button>
         </div>
       </div>
+      <div class="swgap" id="swgap"></div>
     </div>
     <div class="split" id="split" role="separator" aria-orientation="horizontal" aria-label="위아래 크기 조절" tabindex="0"></div>
     <div class="list">
@@ -396,6 +413,7 @@ var $ = function(i){ return document.getElementById(i); };
 function pad(n){ return (n<10?'0':'')+n; }
 function kt(t){ var a=t.split(':'),h=+a[0]; return (h<12?'오전':'오후')+' '+((h%12)||12)+':'+a[1]; }
 function ktHtml(t){ var a=t.split(':'),h=+a[0]; return '<i>'+(h<12?'오전':'오후')+'</i>'+((h%12)||12)+':'+a[1]; }
+function ktime(ts){ var d=new Date(ts), h=d.getHours(); return (h<12?'오전 ':'오후 ')+(h%12||12)+':'+pad(d.getMinutes()); }
 function fmt(ms){ var s=Math.floor(Math.abs(ms)/1000), h=Math.floor(s/3600), m=Math.floor(s%3600/60); s=s%60; return (h?h+':'+pad(m):pad(m))+':'+pad(s); }
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
 
@@ -439,6 +457,49 @@ function swWake(){
   }catch(e){}
 }
 function swReset(){ sw={run:false,m0:0,acc:0,idx:-1}; swSave(); swWake(); }
+
+/* ---- 계획 대비 실제 진행 기록 ----
+   swLog[프로그램 번호] = {st: 스톱워치를 처음 누른 시각(일정 시계), ms: 실제 경과(ms)}
+   startD = 실제 시작 - 계획 시작 (+ 늦게 시작)
+   durD   = 실제 소요 - 배정 시간 (+ 초과)
+   endD   = 실제(실행 중이면 예상) 종료 - 계획 종료 (+ 지연 / - 빠름) */
+var swLog={}, LOGKEY='swLog1';
+function logSync(){
+  if(sw.idx<0||!swOn()) return;
+  var r=swLog[sw.idx], m=swMs();
+  if(!r) swLog[sw.idx]={st:now()-m,ms:m}; else r.ms=m;
+}
+function logSave(){ logSync(); try{ localStorage.setItem(LOGKEY,JSON.stringify(swLog)); }catch(e){} }
+function logRestore(){
+  swLog={};
+  try{
+    var o=JSON.parse(localStorage.getItem(LOGKEY)||'null')||{}, k, i, r;
+    for(k in o){ i=+k; r=o[k];
+      if(i>=0&&i<D.length&&r&&isFinite(r.st)&&isFinite(r.ms)&&r.ms>=0&&r.st>D[i].start-6*3600000&&r.st<D[i].end+6*3600000) swLog[i]={st:r.st,ms:r.ms};
+    }
+  }catch(e){ swLog={}; }
+}
+function gapInfo(i){
+  var p=D[i], r=swLog[i]; if(!r) return null;
+  var len=p.len*60000, run=(sw.idx===i&&sw.run), ms=(sw.idx===i&&swOn())?swMs():r.ms;
+  return {ms:ms, len:len, run:run, startD:r.st-p.start, durD:ms-len, endD:(r.st+(run?Math.max(ms,len):ms))-p.end};
+}
+function mm(ms){
+  var s=Math.round(Math.abs(ms)/1000), h=Math.floor(s/3600), m=Math.floor(s%3600/60), t; s%=60;
+  t=(h?h+'시간 ':'')+(m?m+'분 ':'')+((s||(!h&&!m))?s+'초':'');
+  return t.replace(/\s+$/,'');
+}
+function sg(ms){ return (ms<0?'−':'+')+mm(ms); }
+function gapView(g){
+  var e=g.endD, cls=e>5000?'late':(e<-5000?'early':'ok');
+  return {cls:cls, lab:cls==='ok'?'정시':(sg(e)+(cls==='late'?' 지연':' 빠름'))};
+}
+function gapFull(g){
+  var v=gapView(g), d=[];
+  d.push(Math.abs(g.startD)<5000?'정시 시작':(mm(g.startD)+(g.startD>0?' 늦게 시작':' 일찍 시작')));
+  if(!g.run||g.ms>g.len) d.push(Math.abs(g.durD)<5000?'배정 시간대로':(mm(g.durD)+(g.durD>0?' 초과':' 단축')));
+  return {cls:v.cls, txt:(g.run?'종료 예상 ':'결과 ')+v.lab+' ('+d.join(' · ')+')'};
+}
 document.addEventListener('visibilitychange',function(){
   if(document.visibilityState==='hidden'){ hid={w:Date.now(),m:mono()}; swSave(); return; }
   if(hid){
@@ -481,7 +542,7 @@ function buildRows(){
   D.forEach(function(p,i){
     if(p.pg!==pg) return;
     if(p.grp) h+='<div class="grp">'+esc(p.grp)+'</div>';
-    h+='<button class="row" data-i="'+i+'"><span class="fill"></span><span class="t">'+ktHtml(p.t)+'</span><span class="l">'+p.len+'분</span>'
+    h+='<button class="row" data-i="'+i+'"><span class="fill"></span><span class="act"></span><span class="t">'+ktHtml(p.t)+'</span><span class="l">'+p.len+'분</span>'
      +'<span><span class="n">'+(p.no?p.no+'. ':'')+esc(p.title)+'</span><br><span class="s">'+(p.who?esc(p.who)+' · '+esc(p.cong):(p.mc?'사회 '+esc(p.mc):'&nbsp;'))+(p.aud?' <span class="achip">청중 참여 '+p.aud.items.length+'회</span>':'')+'</span></span><span class="pc"></span></button>';
   });
   $('rows').innerHTML=h;
@@ -493,7 +554,14 @@ function updateRows(){
     var i=+r.dataset.i,p=D[i],pr=Math.max(0,Math.min(1,(n-p.start)/(p.end-p.start)));
     r.style.setProperty('--p',(pr*100)+'%');
     r.classList.toggle('done',pr>=1); r.classList.toggle('cur',i===ci); r.classList.toggle('sel',i===sel);
-    r.querySelector('.pc').textContent = pr>=1?'완료':(i===ci?Math.floor(pr*100)+'%':'');
+    /* 계획 진행(행 배경) 옆에 실제 스톱워치 진행(아래 막대)과 계획 대비 편차를 함께 표시 */
+    var g=swLog[i]?gapInfo(i):null, a=r.querySelector('.act'), html='<span>'+(pr>=1?'완료':(i===ci?Math.floor(pr*100)+'%':''))+'</span>';
+    if(g){
+      var v=gapView(g);
+      a.className='act on'+(g.ms>g.len?' over':''); a.style.setProperty('--a',Math.min(100,g.ms/g.len*100)+'%');
+      html+='<span class="dl '+v.cls+'">'+(g.run?'▶ ':'')+v.lab+'</span>';
+    } else if(a.className!=='act'){ a.className='act'; a.style.setProperty('--a','0%'); }
+    if(r._h!==html){ r._h=html; r.querySelector('.pc').innerHTML=html; }
     if(i===sel) selEl=r;
   });
   if(scrollNeeded && selEl){ $('rows').scrollTop=Math.max(0,selEl.offsetTop-60); scrollNeeded=false; }
@@ -663,7 +731,7 @@ function updateFoot(){
   if(footKey!==ni){
     footKey=ni;
     var cnt=partStr(q)?' ('+partStr(q)+')':'';
-    f.innerHTML='<button class="nx" id="nxbtn"><div class="sec">다음 프로그램 · '+kt(q.t)+' 시작</div><div class="n">'+(q.no?q.no+'. ':'')+esc(q.title)+'</div><div class="s">'+(q.who?esc(q.who)+' · '+esc(q.cong):(q.mc?'사회 '+esc(q.mc):''))+cnt+'</div></button>'
+    f.innerHTML='<button class="nx" id="nxbtn"><div class="sec">다음 프로그램 · '+kt(q.t)+' 시작</div><div class="n">'+(q.no?q.no+'. ':'')+esc(q.title)+'</div><div class="s">'+(q.who?esc(q.who)+' · '+esc(q.cong):(q.mc?'사회 '+esc(q.mc):''))+cnt+'</div><div class="s" id="fdl"></div></button>'
      +'<div class="cd"><div class="big" id="fcd">00:00</div><div class="s" id="ftx"></div></div><div class="cdbar"><i id="fbar"></i></div>';
     $('nxbtn').onclick=function(){ sel=ni; follow=(ni===curIdx()); pv=null; if(D[ni].pg!==pg) setPage(D[ni].pg); else scrollNeeded=true; render(); tick(true); };
   }
@@ -671,6 +739,15 @@ function updateFoot(){
   $('fcd').textContent=fmt(rem); $('fcd').className='big'+(low?' low':'');
   $('ftx').textContent=rem>=3600000?(Math.floor(rem/3600000)+'시간 '+Math.floor(rem%3600000/60000)+'분 남음'):('약 '+Math.ceil(rem/60000)+'분 남음');
   $('fbar').style.width=pct+'%'; $('fbar').style.background=low?'var(--warn)':'var(--accent)';
+  /* 직전 프로그램의 실제 진행이 기록돼 있으면 다음 프로그램의 예상 시작 시각 */
+  var fd='', fc='s', j, gg, e;
+  for(j=ni-1;j>=0&&j>=ni-2&&D[j].day===q.day;j--){
+    if(swLog[j]){ gg=gapInfo(j); e=gg.endD;
+      if(Math.abs(e)<5000){ fd='예상 시작 계획대로'; }
+      else { fd='예상 시작 '+ktime(q.start+e)+' (계획보다 '+mm(e)+(e>0?' 늦게)':' 일찍)'); fc='s '+(e>0?'late':'early'); }
+      break; }
+  }
+  $('fdl').textContent=fd; $('fdl').className=fc;
 }
 
 /* compact (phone) view: one program card + next program at the bottom; tap next to step forward, tap back to return to live */
@@ -689,8 +766,8 @@ function updateMini(){
       +'<h2>'+(p.no?p.no+'. ':'')+esc(p.title)+'</h2>'
       +'<div class="m2">'+kt(p.t)+' ~ '+kt(pad(e.getHours())+':'+pad(e.getMinutes()))+' · '+p.len+'분</div>'
       +'<div class="m2">'+who+(ps?' <span class="pi">('+ps+')</span>':'')+(p.aud?' <span class="achip">청중 참여 '+p.aud.items.length+'회</span>':'')+'</div>'+(pn?'<div class="m3">'+esc(pn)+'</div>':'')
-      +'<div class="mbar"><i id="mbar"></i></div>'
-      +'<div class="mrow"><span id="mbl"></span><b class="big" id="mbig">00:00</b><span id="mpc"></span></div></div>'
+      +'<div class="mbar"><i id="mbar"></i></div><div class="mbar sm"><i id="mbar2"></i></div>'
+      +'<div class="mrow"><span id="mbl"></span><b class="big" id="mbig">00:00</b><span id="mpc"></span></div><div class="mgap" id="mgap"></div></div>'
       +(q?'<button class="mnext" data-i="'+(idx+1)+'"><span class="sec">다음 프로그램 · '+kt(q.t)+' 시작 ›</span><b>'+(q.no?q.no+'. ':'')+esc(q.title)+'</b><span class="m2">'+(q.who?esc(q.who)+' · '+esc(q.cong):(q.mc?'사회 '+esc(q.mc):''))+(qs?' <span class="pi">('+qs+')</span>':'')+'</span><span class="mncd" id="mncd"></span></button>'
           :'<div class="mnext end"><span class="sec">다음 프로그램</span><b>없음 · 오늘 마지막 프로그램</b></div>');
   }
@@ -701,6 +778,12 @@ function updateMini(){
   $('mpill').textContent=st; $('mpill').className='pill'+(st==='진행 중'?' live':'');
   $('mbl').textContent=bl; $('mbig').textContent=fmt(Math.max(0,big)); $('mbig').className='big'+(big<60000&&n<p.end?' low':'');
   $('mbar').style.width=pct+'%'; $('mpc').textContent=(st==='진행 중')?Math.floor(pct)+'%':'';
+  var g=swLog[idx]?gapInfo(idx):null, b2=$('mbar2'), mg=$('mgap');
+  if(g){
+    var gf=gapFull(g); b2.parentNode.style.display='';
+    b2.style.width=Math.min(100,g.ms/g.len*100)+'%'; b2.style.background=g.ms>g.len?'var(--warn)':'var(--ok)';
+    mg.textContent=gf.txt; mg.className='mgap '+gf.cls;
+  } else { b2.parentNode.style.display='none'; mg.textContent=''; mg.className='mgap'; }
   if(q){ var r=q.start-n; $('mncd').textContent=r>0?('시작까지 '+fmt(r)):(n<q.end?'진행 중':'종료'); }
 }
 $('mini').onclick=function(e){
@@ -730,20 +813,37 @@ function tick(force){
   s.classList.toggle('over',ms>target); s.classList.toggle('run',sw.run&&ms<=target);
   $('swbar').style.width=Math.min(100,ms/target*100)+'%';
   $('swbar').style.background=ms>target?'var(--warn)':'var(--accent)';
+  /* 흰 선 = 계획상 현재 위치, 막대 = 실제 진행. 막대가 선보다 뒤면 계획보다 늦은 것 */
+  logSync();
+  var g=swLog[si]?gapInfo(si):null, gf=g?gapFull(g):null, pl=Math.max(0,Math.min(1,(now()-q.start)/(q.end-q.start)));
+  $('swpl').style.left=(pl*100)+'%';
+  $('swgap').textContent=gf?gf.txt:''; $('swgap').className='swgap'+(gf?' '+gf.cls:'');
+  var dl=$('swdel'), showDel=!!swLog[sel]&&!(sw.run&&sw.idx===sel); if(dl.hidden===showDel) dl.hidden=!showDel;
   $('start').textContent=sw.run?'정지':(ms>0?'계속':'시작'); $('start').className='btn '+(sw.run?'stop':'go');
   if(!p.brk){ var a=activePhase(p); if(a!==lastA||sel!==lastSel||force){ if(sel!==lastSel) pv=null; lastA=a; lastSel=sel; render(); } }
   updateRows(); updateMons(); updateAud(); updateFoot(); updateMini();
 }
 
 $('start').onclick=function(){
-  if(sw.run){ sw.acc+=mono()-sw.m0; sw.run=false; }
+  if(sw.run){ sw.acc+=mono()-sw.m0; sw.run=false; logSync(); }
   else {
-    if(sw.idx!==sel) sw={run:false,m0:0,acc:0,idx:sel};   /* 다른 순서에 남은 정지 값은 버리고 지금 순서에서 새로 시작 */
+    if(sw.idx!==sel){   /* 다른 순서에 남은 정지 값은 버리고 지금 순서에서 새로 시작 (이전 순서 기록은 유지) */
+      logSync(); sw={run:false,m0:0,acc:0,idx:sel}; swLog[sel]={st:now(),ms:0};
+    } else if(!swLog[sel]) swLog[sel]={st:now()-swMs(),ms:swMs()};
     sw.m0=mono(); sw.run=true;
   }
-  swSave(); swWake(); tick();
+  swSave(); logSave(); swWake(); tick();
 };
-$('reset').onclick=function(){ swReset(); tick(true); };
+/* 리셋: 스톱워치만 비운다. 기록은 유지하되, 30초 미만 측정은 잘못 누른 것으로 보고 기록도 지운다 */
+$('reset').onclick=function(){
+  if(sw.idx>=0&&swLog[sw.idx]){ logSync(); if(swLog[sw.idx].ms<30000) delete swLog[sw.idx]; }
+  swReset(); logSave(); tick(true);
+};
+$('swdel').onclick=function(){
+  if(!swLog[sel]) return;
+  var p=D[sel]; if(!confirm('"'+(p.no?p.no+'. ':'')+p.title+'" 의 스톱워치 기록을 삭제할까요?')) return;
+  delete swLog[sel]; if(sw.idx===sel) swReset(); logSave(); tick(true);
+};
 /* theme (dark / light) */
 (function(){
   var b=$('thm'), de=document.documentElement, mt=document.querySelector('meta[name="color-scheme"]');
@@ -779,7 +879,7 @@ $('demo').onclick=function(){
   if(demoIdx>=0){ demoBase=PRESETS[demoIdx].t; demoStart=Date.now(); }
   this.setAttribute('aria-pressed',demoIdx>=0?'true':'false');
   this.textContent=demoIdx>=0?('시연 · '+PRESETS[demoIdx].l):'시연 모드';
-  swReset(); follow=true; pv=null; sel=pickSel(); setPage(D[sel].pg); render(); tick(true);
+  swReset(); swLog={}; logSave(); follow=true; pv=null; sel=pickSel(); setPage(D[sel].pg); render(); tick(true);
 };
 
 /* resizable top panel */
@@ -793,10 +893,10 @@ $('demo').onclick=function(){
   sp.addEventListener('keydown',function(e){ var h=top.getBoundingClientRect().height, t=col.getBoundingClientRect().top; if(e.key==='ArrowDown') setH(t+h+20); if(e.key==='ArrowUp') setH(t+h-20); });
 })();
 
-swRestore(); swWake();
+logRestore(); swRestore(); swWake();
 buildTabs(); sel=pickSel(); setPage(D[sel].pg); render(); tick(true);
 setInterval(tick,250);
-setInterval(function(){ if(sw.run) swSave(); },5000);
-window.addEventListener('pagehide',swSave);
+setInterval(function(){ if(sw.run){ swSave(); logSave(); } },5000);
+window.addEventListener('pagehide',function(){ swSave(); logSave(); });
 </script>
 </body></html>
