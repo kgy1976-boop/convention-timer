@@ -68,6 +68,87 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .swgap.early, .mgap.early, .nx .s.early { color: var(--ok); }
 .mgap { font-size: 13px; font-weight: 700; color: var(--mute); }
 
+/* ---------- 등단 순서 창 (「파수대」 요약: 연단 중심 좌우 표) ---------- */
+.seqbtn { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; width: 100%; padding: 10px 14px; border-radius: 10px; border: 2px solid var(--accent); background: var(--accent-dim); color: var(--fg); text-align: left; min-height: 48px; }
+.seqbtn b { font-size: 15px; }
+.seqbtn span { font-size: 12.5px; color: var(--mute); }
+.ovl[hidden] { display: none; }
+.ovl { position: fixed; inset: 0; z-index: 60; background: var(--bg); color: var(--fg); display: flex; flex-direction: column; gap: 8px; padding: max(10px, env(safe-area-inset-top, 0px)) max(10px, env(safe-area-inset-right, 0px)) max(10px, env(safe-area-inset-bottom, 0px)) max(10px, env(safe-area-inset-left, 0px)); }
+.ov-h { display: flex; align-items: center; gap: 8px 12px; flex-wrap: wrap; }
+.ov-h .tt { flex: 1 1 200px; min-width: 0; }
+.ov-h h2 { margin: 0; font-size: 20px; line-height: 1.2; }
+.ov-h small { display: block; font-size: 12px; color: var(--mute); }
+.ov-clk { font: 600 22px var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ov-clk .ap { font: 700 12px var(--sans); color: var(--accent); margin-right: 4px; }
+.ov-sww { display: flex; align-items: center; gap: 8px; }
+.ov-sw { font: 600 28px var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ov-sw.over { color: var(--warn); }
+.ov-sw.run { color: var(--accent); }
+.ov-gap { font-size: 12px; font-weight: 700; color: var(--mute); flex: 1 1 100%; min-height: 0; }
+.ov-gap:empty { display: none; }
+.ov-gap.late { color: var(--warn); }
+.ov-gap.early { color: var(--ok); }
+.ov-h .btn { height: 44px; min-width: 64px; }
+.ov-now { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ov-card { border: 2px solid var(--line); border-radius: 12px; padding: 6px 12px; background: var(--panel); min-width: 0; }
+.ov-card.cur { border-color: var(--accent); }
+.ov-card .lb { font-size: 12px; color: var(--mute); }
+.ov-card .ar { font: 800 24px/1.15 var(--sans); }
+.ov-card .ar.L { color: var(--left); }
+.ov-card .ar.R { color: var(--right); }
+.ov-card .nm { font-size: 20px; font-weight: 800; line-height: 1.2; }
+.ov-card .tt2 { font-size: 12.5px; color: var(--mute); }
+.ov-tbl { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--panel); }
+.ov-th, .ov-tr { display: grid; grid-template-columns: 1fr 1fr 1.15fr 1fr 1fr; }
+.ov-th > div { padding: 5px 2px; text-align: center; font-weight: 700; font-size: 13px; background: var(--panel2); border-bottom: 1px solid var(--line); min-width: 0; }
+.ov-th .L { color: var(--left); }
+.ov-th .R { color: var(--right); }
+.ov-th .C { color: var(--accent); }
+.ov-th small { display: block; font-size: 10.5px; font-weight: 500; color: var(--mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ov-body { flex: 1 1 0; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; position: relative; }
+.ov-tr { border-top: 1px solid var(--line); min-height: 50px; cursor: pointer; position: relative; }
+.ov-tr:first-child { border-top: 0; }
+.ov-tr > div { padding: 4px 3px; display: flex; align-items: center; justify-content: center; min-width: 0; }
+.ov-tr > .C { background: color-mix(in srgb, var(--accent) 8%, transparent); border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
+.ov-tr.done { opacity: .38; }
+.ov-tr.cur { background: var(--accent-dim); box-shadow: inset 5px 0 0 var(--accent); }
+.ov-tr.nxt { outline: 2px dashed var(--accent); outline-offset: -2px; }
+.chip { width: 100%; border-radius: 8px; padding: 3px 4px; text-align: center; line-height: 1.2; border: 1.5px solid; min-width: 0; }
+.chip.L { border-color: var(--left); background: color-mix(in srgb, var(--left) 16%, transparent); }
+.chip.R { border-color: var(--right); background: color-mix(in srgb, var(--right) 16%, transparent); }
+.chip .ct { display: block; font-size: 11px; color: var(--mute); }
+.chip b { font-size: 17px; }
+.ov-tr.cur .chip b { font-size: 19px; }
+.ov-f { display: flex; gap: 8px; align-items: stretch; }
+.ov-f button { height: 60px; border-radius: 12px; font-size: 18px; font-weight: 800; background: var(--panel2); border: 1px solid var(--line); color: var(--fg); }
+.ov-f .prev { flex: 0 0 26%; }
+.ov-f .next { flex: 1 1 0; background: var(--accent); color: var(--onacc); border-color: var(--accent); }
+.ov-f .rst { flex: 0 0 auto; padding: 0 14px; white-space: nowrap; font-size: 14px; }
+.ov-f .cnt { display: grid; place-items: center; flex: 0 0 14%; font: 700 15px var(--mono); color: var(--mute); }
+@media (max-width: 720px), (max-height: 520px) {
+  .ov-h h2 { font-size: 16px; }
+  .ov-clk { font-size: 17px; }
+  .ov-sw { font-size: 22px; }
+  .ov-h .btn { height: 38px; min-width: 56px; font-size: 14px; }
+  .ov-card .ar { font-size: 17px; }
+  .ov-card .nm { font-size: 16px; }
+  .ov-card .tt2 { font-size: 11px; }
+  .ov-tr { min-height: 44px; }
+  .chip b { font-size: 14px; }
+  .ov-tr.cur .chip b { font-size: 15px; }
+  .chip .ct { font-size: 9.5px; }
+  .ov-th > div { font-size: 12px; }
+  .ov-f button { height: 50px; font-size: 16px; }
+}
+@media (max-height: 520px) and (orientation: landscape) {
+  .ovl { gap: 5px; padding-top: 6px; padding-bottom: 6px; }
+  .ov-h small { display: none; }
+  .ov-card { padding: 3px 10px; }
+  .ov-card .tt2 { display: none; }
+  .ov-tr { min-height: 38px; }
+  .ov-f button { height: 40px; font-size: 14px; }
+}
+
 .split { flex: 0 0 18px; display: grid; place-items: center; cursor: row-resize; touch-action: none; }
 .split::before { content: ""; width: 64px; height: 5px; border-radius: 3px; background: var(--line); }
 .split:active::before, .split:focus-visible::before { background: var(--accent); }
@@ -325,6 +406,26 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   <section class="col right" id="right"><div class="rbody" id="rbody"></div><div class="mons" id="mons"></div><div class="foot" id="foot"></div></section>
   <section class="mini" id="mini" aria-live="off"></section>
 </div>
+<div class="ovl" id="seqov" role="dialog" aria-modal="true" aria-label="등단 순서" hidden>
+  <div class="ov-h">
+    <div class="tt"><h2 id="ovtitle">등단 순서</h2><small>좌석(청중석)에서 본 방향 · 연단(中)이 가운데</small></div>
+    <div class="ov-clk" id="ovclk">--:--:--</div>
+    <div class="ov-sww"><div class="ov-sw" id="ovsw">00:00</div><button class="btn go" id="ovstart" type="button">시작</button></div>
+    <button class="btn" id="ovclose" type="button">닫기</button>
+    <div class="ov-gap" id="ovgap"></div>
+  </div>
+  <div class="ov-now" id="ovnow"></div>
+  <div class="ov-tbl">
+    <div class="ov-th" id="ovth"></div>
+    <div class="ov-body" id="ovbody"></div>
+  </div>
+  <div class="ov-f">
+    <button class="prev" id="ovprev" type="button">‹ 이전</button>
+    <div class="cnt" id="ovcnt">0/0</div>
+    <button class="next" id="ovnext" type="button">다음 ›</button>
+    <button class="rst" id="ovrst" type="button">처음으로</button>
+  </div>
+</div>
 
 <script>
 /* ---------------- data ---------------- */
@@ -351,6 +452,21 @@ function it(pg,t,len,no,title,who,cong,ppl,ph,x){
 var PAN = '1항 황재희 · 2항 오승인 · 3항 최신영 · 삽화 김남희 · 4-5항 김도현 · 6항 김영은 · 7항 김지원 · 8항 문경건 · 삽화 홍지효 · 9항 김영원 · 10항 이강민 · 11항 장성식 · 삽화 정유진 · 12항 고석주 · 13항 문재원 · 14항 조하경 · 15항 이동찬 · 삽화 해설 1·2 조은아이조이(어린 딸은 어머니 마이크 사용) · 16항 정주환 · 17항 김미나 · 18항 이정호 · 복습질문 1 표현 · 2 최유빈 · 3 이휘호';
 var Q2a = '우리 순회구에도 이 면에서 본이 되는 분들이 많이 계신데요, 이제 그 중 한분을 초대해서 회견해 보도록 하겠습니다.';
 var Q2b = '…이제 그 점을 보여주는 실연을 한가지 보도록 하시죠.';
+/* 25일 오후 「파수대」 요약: 해설자 등단 순서 (마이크 위치는 좌석에서 본 방향: 1·2 = 연단 왼쪽, 3·4 = 연단 오른쪽, 연사는 中 = 연단)
+   표의 맨 아래(복습질문-3 다음) 행은 첨부 이미지에 잘려 있어 포함하지 않았다. 필요하면 아래 배열 끝에 Q(...)로 추가 */
+var SEQ7 = (function(){
+  function Q(t,n,m){ return {t:t,who:[{n:n,m:m,t:t}]}; }
+  return [
+    Q('1항 해설','황재희',1), Q('2항 성구낭독·해설','오승인',3), Q('3항 해설','최신영',1), Q('삽화 해설','김남희',2),
+    Q('4-5항 해설','김도현',3), Q('6항 해설','김영은',1), Q('7항 성구낭독·해설','김지원',3), Q('8항 해설','문경건',1),
+    Q('삽화 해설','홍지효',2), Q('9항 해설','김영원',3), Q('10항 해설','이강민',1), Q('11항 해설','장성식',3),
+    Q('삽화 해설','정유진',4), Q('12항 해설','고석주',1), Q('13항 성구낭독·해설','문재원',3), Q('14항 해설','조하경',1),
+    Q('15항 해설','이동찬',3),
+    {t:'삽화 해설 1·2',who:[{n:'조은아',m:3,t:'삽화 해설-1'},{n:'이조이',m:4,t:'삽화 해설-2 · 어린 딸(어머니 마이크 사용)'}]},
+    Q('16항 성구낭독·해설','정주환',1), Q('17항 해설','김미나',3), Q('18항 해설','이정호',1),
+    Q('복습질문 1','표현',3), Q('복습질문 2','최유빈',1), Q('복습질문 3','이휘호',3)
+  ];
+})();
 var D = [
   /* 23일 파이오니아 모임 · 휴회 전 */
   it('a1','13:00',5,'','노래 84번 및 기도','','',[],null,{cue:'마이크 위치 확인 필요'}),
@@ -384,7 +500,7 @@ var D = [
   it('b2','13:20',10,'','음악 (회기 사회자)','',''),
   it('b2','13:30',5,'','노래 111번','',''),
   it('b2','13:35',10,'6','경험담','김영업','광명철산북부',[R('고미화','철산북부','유','1'),R('김용욱','광명서부','유','2')],[P0(),PI(2,null,'회견 2명 · 신호 시','…이제 우리 순회구에서 전파 활동에 참여하는 데서 기쁨을 얻고 있는 연로한 증인 두 명과 회견해 보겠다.')]),
-  it('b2','13:45',29,'7','「파수대」 요약','김성도','광명서부',[],null,{list:PAN,cue:'핸드 마이크(무선) 왼쪽 무대 1·2번(조승권·이경찬 교육), 오른쪽 무대 3·4번(황준호·용지환 교육) · 참여자 안내: 전자기기 비행기 모드 / 마이크는 손등이 보이지 않게 / 퇴장 시 청중석 방향으로 회전 / 마이크 스위치 조작 금지 / 퇴장 시 말하지 않기(마이크 켜져 있음)'}),
+  it('b2','13:45',29,'7','「파수대」 요약','김성도','광명서부',[],null,{list:PAN,seq:SEQ7,cue:'핸드 마이크(무선) 왼쪽 무대 1·2번(조승권·이경찬 교육), 오른쪽 무대 3·4번(황준호·용지환 교육) · 참여자 안내: 전자기기 비행기 모드 / 마이크는 손등이 보이지 않게 / 퇴장 시 청중석 방향으로 회전 / 마이크 스위치 조작 금지 / 퇴장 시 말하지 않기(마이크 켜져 있음)'}),
   it('b2','14:15',14,'8','단순한 생활','홍양일','시흥정왕서부',[R('김규영','시흥정왕동부','유','1')],
      [P0(),PI(1,null,'신호 시','…이제 세속일과 때문에 … 한 가장과 회견해 보도록 하겠습니다.')],{grp:'심포지엄 · 진정한 행복을 가져오는 것들을 추구하십시오'}),
   it('b2','14:30',14,'9','좋은 친구','신광섭','광명철산남부',[S('이아라','철산남부','무','3','의자에 앉아서'),S('신다현','철산남부','무','4','의자에 앉아서')],[P0(),PS(null,'2명, 의자에 앉아서 · 신호 시')]),
@@ -421,6 +537,7 @@ function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
 var PRESETS = [
   {l:'23일 오후 1:42', t:new Date(2026,9,23,13,42,0).getTime()},
   {l:'25일 오전 10:20', t:new Date(2026,9,25,10,20,0).getTime()},
+  {l:'25일 오후 1:44', t:new Date(2026,9,25,13,44,30).getTime()},
   {l:'25일 오후 2:20', t:new Date(2026,9,25,14,20,0).getTime()}
 ];
 var demoIdx=-1, demoBase=0, demoStart=0;
@@ -686,6 +803,11 @@ function render(){
   }
   var a=activePhase(p), show=(pv!==null&&pv<p.ph.length)?pv:a, ph=p.ph[show];
   h+='<div class="hd"><div><div class="k">'+(p.no?'프로그램 '+p.no+' · ':'')+kt(p.t)+' · '+p.len+'분</div><h2>'+esc(p.title)+'</h2></div>'+live+'</div>';
+  if(p.seq){
+    var sc=seqCur(sel);
+    h+='<button class="seqbtn" type="button" data-seq="'+sel+'"><b>등단 순서 창 열기 (연단 중심 좌우 표)</b><span>'
+      +(sc<0?'해설자 '+p.seq.length+'명 · 등단 전':'지금 '+(sc+1)+'/'+p.seq.length+' · '+p.seq[sc].who.map(function(w){return esc(w.n);}).join('·'))+'</span></button>';
+  }
   h+='<div class="g2"><div><div class="sec">사회자 · 연사 · 참여자</div><div class="people">';
   if(p.mc) h+='<div class="p"><span class="tag C">사회자</span><span class="nm">'+esc(p.mc)+'<span class="cg"> '+esc(p.mcc)+'</span></span><span class="mic on">'+(p.day==='b'?'무대 우측 스탠드 마이크 (전주곡·노래·휴회는 연탁)':'유선 마이크 · 번호 확인')+'</span></div>';
   if(p.who) h+='<div class="p"><span class="tag C">연사</span><span class="nm">'+esc(p.who)+'<span class="cg"> '+esc(p.cong)+'</span></span><span class="mic">중앙 연단</span></div>';
@@ -765,7 +887,7 @@ function updateMini(){
     M.innerHTML=tabs+'<div class="mmain"><div class="mtop"><span class="pill" id="mpill">-</span>'+(mview!==null?'<button class="mback" id="mback">↩ 지금으로 돌아가기</button>':'')+'</div>'
       +'<h2>'+(p.no?p.no+'. ':'')+esc(p.title)+'</h2>'
       +'<div class="m2">'+kt(p.t)+' ~ '+kt(pad(e.getHours())+':'+pad(e.getMinutes()))+' · '+p.len+'분</div>'
-      +'<div class="m2">'+who+(ps?' <span class="pi">('+ps+')</span>':'')+(p.aud?' <span class="achip">청중 참여 '+p.aud.items.length+'회</span>':'')+'</div>'+(pn?'<div class="m3">'+esc(pn)+'</div>':'')
+      +'<div class="m2">'+who+(ps?' <span class="pi">('+ps+')</span>':'')+(p.aud?' <span class="achip">청중 참여 '+p.aud.items.length+'회</span>':'')+'</div>'+(pn?'<div class="m3">'+esc(pn)+'</div>':'')+(p.seq?'<button class="seqbtn" type="button" data-seq="'+idx+'"><b>등단 순서 창 열기</b><span>연단 중심 좌우 표 · 해설자 '+p.seq.length+'명</span></button>':'')
       +'<div class="mbar"><i id="mbar"></i></div><div class="mbar sm"><i id="mbar2"></i></div>'
       +'<div class="mrow"><span id="mbl"></span><b class="big" id="mbig">00:00</b><span id="mpc"></span></div><div class="mgap" id="mgap"></div></div>'
       +(q?'<button class="mnext" data-i="'+(idx+1)+'"><span class="sec">다음 프로그램 · '+kt(q.t)+' 시작 ›</span><b>'+(q.no?q.no+'. ':'')+esc(q.title)+'</b><span class="m2">'+(q.who?esc(q.who)+' · '+esc(q.cong):(q.mc?'사회 '+esc(q.mc):''))+(qs?' <span class="pi">('+qs+')</span>':'')+'</span><span class="mncd" id="mncd"></span></button>'
@@ -798,6 +920,86 @@ $('mini').onclick=function(e){
   if(e.target.closest('.mback')){ mview=null; miniKey=null; updateMini(); }
 };
 
+/* ---------------- 등단 순서 창: 연단(中)을 가운데 두고 마이크 1·2(왼쪽) / 3·4(오른쪽) 표 ----------------
+   - 프로그램(seq가 있는 것)이 시작되면 자동으로 열리고, 닫기·다시 열기 가능
+   - 지금/다음 등단자와 방향(◀ 왼쪽 / 오른쪽 ▶)을 크게 표시, 이전/다음/행 탭으로 진행, 새로고침해도 진행 위치 유지 */
+var seq={open:false,idx:-1,c:-1,built:-1,autoDone:-1,autoOpened:false};
+function seqKey(i){ return D[i].pg+'-'+D[i].no; }
+function seqLoad(i){
+  try{
+    var o=JSON.parse(localStorage.getItem('seqStep1')||'null'), age=o?Date.now()-o.at:-1;
+    if(o&&o.k===seqKey(i)&&age>=0&&age<3*3600000) return Math.max(-1,Math.min(D[i].seq.length-1,(+o.c)||-1));
+  }catch(e){}
+  return -1;
+}
+function seqSave(){ try{ localStorage.setItem('seqStep1',JSON.stringify({k:seqKey(seq.idx),c:seq.c,at:Date.now()})); }catch(e){} }
+function seqCur(i){ return seq.idx===i?seq.c:seqLoad(i); }
+function seqSide(r){ return r.who[0].m<=2?'L':'R'; }
+function seqCard(r,lb,cls){
+  if(!r) return '<div class="ov-card '+cls+'"><div class="lb">'+lb+'</div><div class="nm">마침</div></div>';
+  var s=seqSide(r);
+  return '<div class="ov-card '+cls+'"><div class="lb">'+lb+'</div><div class="ar '+s+'">'+(s==='L'?'◀ 왼쪽 ':'오른쪽 ▶ ')+'마이크 '+r.who.map(function(w){return w.m;}).join('·')+'번</div>'
+    +'<div class="nm">'+r.who.map(function(w){return esc(w.n);}).join(' · ')+'</div><div class="tt2">'+esc(r.t)+'</div></div>';
+}
+function seqBuild(i){
+  var p=D[i], h='', map={1:0,2:1,3:3,4:4};
+  $('ovtitle').textContent=(p.no?p.no+'. ':'')+p.title+' · 등단 순서';
+  $('ovth').innerHTML='<div class="L">마이크 1<small>왼쪽</small></div><div class="L">마이크 2<small>왼쪽</small></div><div class="C">연단 (中)<small>'+esc(p.who||'')+'</small></div><div class="R">마이크 3<small>오른쪽</small></div><div class="R">마이크 4<small>오른쪽</small></div>';
+  p.seq.forEach(function(r,k){
+    var cells=['','','','',''];
+    r.who.forEach(function(w){ cells[map[w.m]]='<div class="chip '+(w.m<=2?'L':'R')+'"><span class="ct">'+esc(w.t||r.t)+'</span><b>'+esc(w.n)+'</b></div>'; });
+    h+='<div class="ov-tr" data-k="'+k+'">'+cells.map(function(c,x){ return '<div'+(x===2?' class="C"':'')+'>'+c+'</div>'; }).join('')+'</div>';
+  });
+  $('ovbody').innerHTML=h; seq.built=i;
+}
+function seqUpdate(scroll){
+  var p=D[seq.idx], rows=p.seq, c=seq.c, n=rows.length, trs=$('ovbody').children, k;
+  for(k=0;k<trs.length;k++){ trs[k].classList.toggle('done',k<c); trs[k].classList.toggle('cur',k===c); trs[k].classList.toggle('nxt',k===c+1); }
+  $('ovnow').innerHTML=(c<0
+    ?'<div class="ov-card cur"><div class="lb">지금</div><div class="ar" style="color:var(--accent)">연단 (中)</div><div class="nm">'+esc(p.who||'')+'</div><div class="tt2">연사 진행 중 · 첫 해설자 등단 전</div></div>'
+    :seqCard(rows[c],'지금 등단','cur'))+seqCard(rows[c+1],'다음 등단','nx');
+  $('ovcnt').textContent=(c+1)+'/'+n;
+  $('ovprev').style.opacity=c<0?'.4':''; $('ovnext').style.opacity=c>=n-1?'.4':'';
+  if(scroll&&trs.length){ var b=$('ovbody'), t=trs[Math.max(0,c)]; b.scrollTop=Math.max(0,t.offsetTop-b.clientHeight*0.3); }
+}
+function seqSet(c){
+  var n=D[seq.idx].seq.length; c=Math.max(-1,Math.min(n-1,c));
+  if(c===seq.c) return;
+  seq.c=c; seqSave(); seqUpdate(true); if(sel===seq.idx) render();
+}
+function openSeq(i,auto){
+  if(!D[i]||!D[i].seq) return;
+  if(seq.idx!==i||seq.built!==i){ seq.idx=i; seq.c=seqLoad(i); seqBuild(i); }
+  seq.open=true; seq.autoOpened=!!auto; $('seqov').hidden=false; seqUpdate(true); seqMirror();
+}
+function closeSeq(){ var was=seq.open; seq.open=false; seq.autoOpened=false; $('seqov').hidden=true; if(was&&seq.idx>=0&&sel===seq.idx) render(); }
+/* 창 안에서도 시계·스톱워치를 쓸 수 있게 본 화면 값을 복사 */
+function seqMirror(){
+  if(!seq.open) return;
+  var s=$('sw'), b=$('start'), g=$('swgap');
+  $('ovclk').innerHTML=$('clock').innerHTML;
+  $('ovsw').textContent=s.textContent; $('ovsw').className='ov-sw'+(s.classList.contains('over')?' over':'')+(s.classList.contains('run')?' run':'');
+  $('ovstart').textContent=b.textContent; $('ovstart').className='btn '+(b.classList.contains('stop')?'stop':'go');
+  $('ovgap').textContent=g.textContent; $('ovgap').className='ov-gap'+(g.classList.contains('late')?' late':(g.classList.contains('early')?' early':''));
+}
+function seqTick(){
+  var ci=curIdx();
+  if(ci>=0&&D[ci].seq&&seq.autoDone!==ci){ seq.autoDone=ci; openSeq(ci,true); }
+  else if(seq.open&&seq.autoOpened&&ci!==seq.idx){ closeSeq(); }   /* 자동으로 열린 창은 해당 프로그램이 끝나면 자동으로 닫힘 */
+  seqMirror();
+}
+$('ovnext').onclick=function(){ seqSet(seq.c+1); };
+$('ovprev').onclick=function(){ seqSet(seq.c-1); };
+$('ovrst').onclick=function(){ seqSet(-1); };
+$('ovclose').onclick=closeSeq;
+$('ovstart').onclick=function(){ $('start').click(); };
+$('ovbody').onclick=function(e){ var t=e.target.closest('.ov-tr'); if(t) seqSet(+t.dataset.k); };
+document.addEventListener('click',function(e){ var b=e.target.closest('.seqbtn'); if(b) openSeq(+b.dataset.seq); });
+document.addEventListener('keydown',function(e){
+  if(!seq.open) return;
+  if(e.key==='Escape') closeSeq(); else if(e.key==='ArrowRight'||e.key==='ArrowDown') seqSet(seq.c+1); else if(e.key==='ArrowLeft'||e.key==='ArrowUp') seqSet(seq.c-1);
+});
+
 /* ---------------- main loop ---------------- */
 var lastA=-1,lastSel=-1;
 function tick(force){
@@ -821,7 +1023,7 @@ function tick(force){
   var dl=$('swdel'), showDel=!!swLog[sel]&&!(sw.run&&sw.idx===sel); if(dl.hidden===showDel) dl.hidden=!showDel;
   $('start').textContent=sw.run?'정지':(ms>0?'계속':'시작'); $('start').className='btn '+(sw.run?'stop':'go');
   if(!p.brk){ var a=activePhase(p); if(a!==lastA||sel!==lastSel||force){ if(sel!==lastSel) pv=null; lastA=a; lastSel=sel; render(); } }
-  updateRows(); updateMons(); updateAud(); updateFoot(); updateMini();
+  updateRows(); updateMons(); updateAud(); updateFoot(); updateMini(); seqTick();
 }
 
 $('start').onclick=function(){
@@ -879,7 +1081,8 @@ $('demo').onclick=function(){
   if(demoIdx>=0){ demoBase=PRESETS[demoIdx].t; demoStart=Date.now(); }
   this.setAttribute('aria-pressed',demoIdx>=0?'true':'false');
   this.textContent=demoIdx>=0?('시연 · '+PRESETS[demoIdx].l):'시연 모드';
-  swReset(); swLog={}; logSave(); follow=true; pv=null; sel=pickSel(); setPage(D[sel].pg); render(); tick(true);
+  swReset(); swLog={}; logSave(); closeSeq(); seq.autoDone=-1; seq.idx=-1; seq.built=-1; seq.c=-1; try{ localStorage.removeItem('seqStep1'); }catch(e){}
+  follow=true; pv=null; sel=pickSel(); setPage(D[sel].pg); render(); tick(true);
 };
 
 /* resizable top panel */
