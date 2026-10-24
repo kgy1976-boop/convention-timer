@@ -409,8 +409,45 @@ var demoIdx=-1, demoBase=0, demoStart=0;
 function now(){ return demoIdx>=0 ? demoBase+(Date.now()-demoStart) : Date.now(); }
 
 var sel=0, pg='a1', follow=true, pv=null, scrollNeeded=true;
-var sw={run:false,t0:0,acc:0};
-function swMs(){ return sw.acc+(sw.run?Date.now()-sw.t0:0); }
+/* stopwatch
+   - 기기 시계(Date.now)가 아니라 단조 시계(performance.now)로 잰다: 자동 시간 동기화로 기기 시계가 튀어도 값이 변하지 않음
+   - 시작한 프로그램(idx)에 묶인다: 일정이 다음 순서로 넘어가도 배정 시간·경과 값이 바뀌지 않음
+   - 화면 잠금/앱 전환으로 페이지가 멈춘 시간은 복귀 시 보정, 새로고침해도 이어서 진행 */
+var sw={run:false,m0:0,acc:0,idx:-1};
+function mono(){ return (window.performance&&performance.now)?performance.now():Date.now(); }
+function swMs(){ return sw.acc+(sw.run?mono()-sw.m0:0); }
+function swOn(){ return sw.idx>=0&&(sw.run||sw.acc>0); }
+function swShown(){ return sw.run?sw.idx:sel; }
+function swMsFor(i){ return (sw.idx===i&&swOn())?swMs():0; }
+var SWKEY='swState1', wl=null, hid=null;
+function swSave(){
+  try{ if(!swOn()){ localStorage.removeItem(SWKEY); return; }
+    localStorage.setItem(SWKEY,JSON.stringify({idx:sw.idx,run:sw.run,ms:swMs(),at:Date.now()})); }catch(e){}
+}
+function swRestore(){
+  try{
+    var o=JSON.parse(localStorage.getItem(SWKEY)||'null'); if(!o) return;
+    var age=Date.now()-o.at;
+    if(!(o.idx>=0&&o.idx<D.length)||age<0||age>(o.run?30:120)*60000){ localStorage.removeItem(SWKEY); return; }
+    sw={run:!!o.run,m0:mono(),acc:o.ms+(o.run?age:0),idx:o.idx};
+  }catch(e){}
+}
+function swWake(){
+  try{
+    if(sw.run){ if(!wl&&navigator.wakeLock) navigator.wakeLock.request('screen').then(function(l){ wl=l; l.addEventListener('release',function(){ wl=null; }); }).catch(function(){}); }
+    else if(wl){ wl.release(); wl=null; }
+  }catch(e){}
+}
+function swReset(){ sw={run:false,m0:0,acc:0,idx:-1}; swSave(); swWake(); }
+document.addEventListener('visibilitychange',function(){
+  if(document.visibilityState==='hidden'){ hid={w:Date.now(),m:mono()}; swSave(); return; }
+  if(hid){
+    var dw=Date.now()-hid.w, dm=mono()-hid.m; hid=null;
+    /* 숨겨진 동안 단조 시계가 멈춘 만큼(= 기기 시계와의 차이)만 보정 */
+    if(sw.run&&dw-dm>1500&&dw<6*3600000) sw.m0-=(dw-dm);
+  }
+  swWake(); tick();
+});
 
 function curIdx(){ var n=now(); for(var i=0;i<D.length;i++) if(n>=D[i].start&&n<D[i].end) return i; return -1; }
 function nextIdx(){
@@ -562,7 +599,7 @@ function updateMons(){
 }
 
 /* ---------------- right panel ---------------- */
-function elapsedFor(p){ if(sw.acc>0||sw.run) return swMs()/1000; return Math.max(0,(now()-p.start)/1000); }
+function elapsedFor(p){ var i=D.indexOf(p); if(sw.idx===i&&swOn()) return swMs()/1000; return Math.max(0,(now()-p.start)/1000); }
 function activePhase(p){ var e=elapsedFor(p), a=0; p.ph.forEach(function(x,i){ if(x.at!==null&&e>=x.at) a=i; }); return a; }
 function micText(x){
   var t;
@@ -686,9 +723,9 @@ function tick(force){
   $('clock').innerHTML='<span class="ap">'+(h<12?'오전':'오후')+'</span>'+pad(h%12||12)+':'+pad(n.getMinutes())+':'+pad(n.getSeconds());
   $('date').textContent=n.getFullYear()+'.'+pad(n.getMonth()+1)+'.'+pad(n.getDate())+' ('+'일월화수목금토'.charAt(n.getDay())+')';
   if(follow&&ci>=0&&sel!==ci){ sel=ci; pv=null; if(D[ci].pg!==pg) setPage(D[ci].pg); else scrollNeeded=true; render(); }
-  var p=D[sel], ms=swMs(), target=p.len*60000;
-  $('swname').textContent=(p.no?p.no+'. ':'')+p.title;
-  $('swtarget').textContent=pad(p.len)+':00';
+  var p=D[sel], si=swShown(), q=D[si], ms=swMsFor(si), target=q.len*60000;
+  $('swname').textContent=(si!==sel?'계측 중 · ':'')+(q.no?q.no+'. ':'')+q.title;
+  $('swtarget').textContent=pad(q.len)+':00';
   var s=$('sw'); s.textContent=(ms>target?'+':'')+fmt(ms>target?ms-target:ms);
   s.classList.toggle('over',ms>target); s.classList.toggle('run',sw.run&&ms<=target);
   $('swbar').style.width=Math.min(100,ms/target*100)+'%';
@@ -698,8 +735,15 @@ function tick(force){
   updateRows(); updateMons(); updateAud(); updateFoot(); updateMini();
 }
 
-$('start').onclick=function(){ if(sw.run){ sw.acc+=Date.now()-sw.t0; sw.run=false; } else { sw.t0=Date.now(); sw.run=true; } tick(); };
-$('reset').onclick=function(){ sw={run:false,t0:0,acc:0}; tick(true); };
+$('start').onclick=function(){
+  if(sw.run){ sw.acc+=mono()-sw.m0; sw.run=false; }
+  else {
+    if(sw.idx!==sel) sw={run:false,m0:0,acc:0,idx:sel};   /* 다른 순서에 남은 정지 값은 버리고 지금 순서에서 새로 시작 */
+    sw.m0=mono(); sw.run=true;
+  }
+  swSave(); swWake(); tick();
+};
+$('reset').onclick=function(){ swReset(); tick(true); };
 /* theme (dark / light) */
 (function(){
   var b=$('thm'), de=document.documentElement, mt=document.querySelector('meta[name="color-scheme"]');
@@ -735,7 +779,7 @@ $('demo').onclick=function(){
   if(demoIdx>=0){ demoBase=PRESETS[demoIdx].t; demoStart=Date.now(); }
   this.setAttribute('aria-pressed',demoIdx>=0?'true':'false');
   this.textContent=demoIdx>=0?('시연 · '+PRESETS[demoIdx].l):'시연 모드';
-  sw={run:false,t0:0,acc:0}; follow=true; pv=null; sel=pickSel(); setPage(D[sel].pg); render(); tick(true);
+  swReset(); follow=true; pv=null; sel=pickSel(); setPage(D[sel].pg); render(); tick(true);
 };
 
 /* resizable top panel */
@@ -749,7 +793,10 @@ $('demo').onclick=function(){
   sp.addEventListener('keydown',function(e){ var h=top.getBoundingClientRect().height, t=col.getBoundingClientRect().top; if(e.key==='ArrowDown') setH(t+h+20); if(e.key==='ArrowUp') setH(t+h-20); });
 })();
 
+swRestore(); swWake();
 buildTabs(); sel=pickSel(); setPage(D[sel].pg); render(); tick(true);
 setInterval(tick,250);
+setInterval(function(){ if(sw.run) swSave(); },5000);
+window.addEventListener('pagehide',swSave);
 </script>
 </body></html>
