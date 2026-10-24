@@ -466,7 +466,7 @@ var SEQ7 = (function(){
     Q('삽화 해설','홍지효',2), Q('9항 해설','김영원',3), Q('10항 해설','이강민',1), Q('11항 해설','장성식',3),
     Q('삽화 해설','정유진',4), Q('12항 해설','고석주',1), Q('13항 성구낭독·해설','문재원',3), Q('14항 해설','조하경',1),
     Q('15항 해설','이동찬',3),
-    {t:'삽화 해설 1·2',who:[{n:'조은아',m:3,t:'삽화 해설-1'},{n:'이조이',m:4,t:'삽화 해설-2 · 어린 딸(어머니 마이크 사용)'}]},
+    {t:'삽화 해설 1·2',who:[{n:'조은아',m:3,t:'삽화 해설-1'},{n:'이조이',m:4,t:'삽화 해설-2 · 어린 딸(어머니 마이크 사용)',ill:false}]},
     Q('16항 성구낭독·해설','정주환',1), Q('17항 해설','김미나',3), Q('18항 해설','이정호',1),
     Q('복습질문 1','표현',3), Q('복습질문 2','최유빈',1), Q('복습질문 3','이휘호',3)
   ];
@@ -938,7 +938,8 @@ function seqLoad(i){
 }
 function seqSave(){ try{ localStorage.setItem('seqStep1',JSON.stringify({k:seqKey(seq.idx),c:seq.c,at:Date.now()})); }catch(e){} }
 function seqCur(i){ return seq.idx===i?seq.c:seqLoad(i); }
-function seqIll(r){ return r.who.some(function(w){ return /삽화/.test(w.t||r.t); }); }
+function wIll(w,r){ return w.ill!==undefined ? w.ill : /삽화/.test(w.t||r.t); }
+function seqIll(r){ return r.who.some(function(w){ return wIll(w,r); }); }
 function seqSide(r){ return r.who[0].m<=2?'L':'R'; }
 function seqCard(r,lb,cls){
   if(!r) return '<div class="ov-card '+cls+'"><div class="lb">'+lb+'</div><div class="nm">마침</div></div>';
@@ -953,7 +954,7 @@ function seqBuild(i){
   $('ovth').innerHTML='<div class="L">마이크 1<small>왼쪽</small></div><div class="L">마이크 2<small>왼쪽</small></div><div class="C">연단 (中)<small>'+esc(p.who||'')+'</small></div><div class="R">마이크 3<small>오른쪽</small></div><div class="R">마이크 4<small>오른쪽</small></div>';
   p.seq.forEach(function(r,k){
     var cells=['','','','',''];
-    r.who.forEach(function(w){ var wt=w.t||r.t, ill=/삽화/.test(wt), sub=wt.replace(/^삽화 ?/,'');
+    r.who.forEach(function(w){ var wt=w.t||r.t, ill=wIll(w,r), sub=wt.replace(/^삽화 ?/,'');
       cells[map[w.m]]='<div class="chip '+(w.m<=2?'L':'R')+(ill?' ill':'')+'"><span class="ct">'+(ill?'삽화 사용'+((sub&&sub!=='해설')?' · '+esc(sub):''):esc(wt))+'</span><b>'+esc(w.n)+'</b></div>'; });
     h+='<div class="ov-tr" data-k="'+k+'">'+cells.map(function(c,x){ return '<div'+(x===2?' class="C"':'')+'>'+c+'</div>'; }).join('')+'</div>';
   });
