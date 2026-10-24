@@ -89,6 +89,16 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .ov-gap.late { color: var(--warn); }
 .ov-gap.early { color: var(--ok); }
 .ov-h .btn { height: 44px; min-width: 64px; }
+.ov-ill { display: flex; align-items: center; gap: 8px; }
+.ov-ill .lb { font-size: 12px; font-weight: 700; color: var(--mute); white-space: nowrap; line-height: 1.2; }
+.ov-ill button { position: relative; flex: 0 0 auto; height: 46px; padding: 0; border: 1.5px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--panel2); }
+.ov-ill button img { display: block; height: 100%; width: auto; }
+.ov-ill button b { position: absolute; left: 3px; top: 3px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 10px; background: var(--accent); color: var(--onacc); font-size: 13px; line-height: 20px; text-align: center; }
+.ill-box[hidden] { display: none; }
+.ill-box { position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,.86); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 14px; }
+.ill-box img { max-width: 100%; max-height: calc(100% - 52px); object-fit: contain; border-radius: 10px; }
+.ill-box .cap { color: #fff; font-size: 18px; font-weight: 800; }
+@media (max-height: 520px) { .ov-ill button { height: 34px; } .ov-ill button b { min-width: 16px; height: 16px; font-size: 11px; line-height: 16px; } }
 .ov-now { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .ov-card { border: 2px solid var(--line); border-radius: 12px; padding: 6px 12px; background: var(--panel); min-width: 0; }
 .ov-card.cur { border-color: var(--accent); }
@@ -418,6 +428,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
     <button class="btn" id="ovclose" type="button">닫기</button>
     <div class="ov-gap" id="ovgap"></div>
   </div>
+  <div class="ov-ill" id="ovill" hidden><span class="lb">「파수대」<br>삽화</span></div>
   <div class="ov-now" id="ovnow"></div>
   <div class="ov-tbl">
     <div class="ov-th" id="ovth"></div>
@@ -430,6 +441,8 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
     <button class="rst" id="ovrst" type="button">처음으로</button>
   </div>
 </div>
+
+<div class="ill-box" id="illbox" role="dialog" aria-label="삽화 확대" hidden><img id="illimg" alt=""><div class="cap" id="illcap"></div></div>
 
 <script>
 /* ---------------- data ---------------- */
@@ -504,7 +517,7 @@ var D = [
   it('b2','13:20',10,'','음악 (회기 사회자)','',''),
   it('b2','13:30',5,'','노래 111번','',''),
   it('b2','13:35',10,'6','경험담','김영업','광명철산북부',[R('고미화','철산북부','유','1'),R('김용욱','광명서부','유','2')],[P0(),PI(2,null,'회견 2명 · 신호 시','…이제 우리 순회구에서 전파 활동에 참여하는 데서 기쁨을 얻고 있는 연로한 증인 두 명과 회견해 보겠다.')]),
-  it('b2','13:45',29,'7','「파수대」 요약','김성도','광명서부',[],null,{list:PAN,seq:SEQ7,cue:'핸드 마이크(무선) 왼쪽 무대 1·2번(조승권·이경찬 교육), 오른쪽 무대 3·4번(황준호·용지환 교육) · 참여자 안내: 전자기기 비행기 모드 / 마이크는 손등이 보이지 않게 / 퇴장 시 청중석 방향으로 회전 / 마이크 스위치 조작 금지 / 퇴장 시 말하지 않기(마이크 켜져 있음)'}),
+  it('b2','13:45',29,'7','「파수대」 요약','김성도','광명서부',[],null,{list:PAN,seq:SEQ7,ills:true,cue:'핸드 마이크(무선) 왼쪽 무대 1·2번(조승권·이경찬 교육), 오른쪽 무대 3·4번(황준호·용지환 교육) · 참여자 안내: 전자기기 비행기 모드 / 마이크는 손등이 보이지 않게 / 퇴장 시 청중석 방향으로 회전 / 마이크 스위치 조작 금지 / 퇴장 시 말하지 않기(마이크 켜져 있음)'}),
   it('b2','14:15',14,'8','단순한 생활','홍양일','시흥정왕서부',[R('김규영','시흥정왕동부','유','1')],
      [P0(),PI(1,null,'신호 시','…이제 세속일과 때문에 … 한 가장과 회견해 보도록 하겠습니다.')],{grp:'심포지엄 · 진정한 행복을 가져오는 것들을 추구하십시오'}),
   it('b2','14:30',14,'9','좋은 친구','신광섭','광명철산남부',[S('이아라','철산남부','무','3','의자에 앉아서'),S('신다현','철산남부','무','4','의자에 앉아서')],[P0(),PS(null,'2명, 의자에 앉아서 · 신호 시')]),
@@ -959,7 +972,20 @@ function seqBuild(i){
     h+='<div class="ov-tr" data-k="'+k+'">'+cells.map(function(c,x){ return '<div'+(x===2?' class="C"':'')+'>'+c+'</div>'; }).join('')+'</div>';
   });
   $('ovbody').innerHTML=h; seq.built=i;
+  seqIllBuild(p);
 }
+/* 「파수대」 연구 기사 삽화 (총 4개): 프로그램에 ills가 있으면 번호 붙은 작은 그림을 보여주고, 누르면 크게 */
+var WS_ILL=[{n:1,f:'img/ws1.jpg'},{n:2,f:'img/ws2.jpg'},{n:3,f:'img/ws3.jpg'},{n:4,f:'img/ws4.jpg'}];
+function seqIllBuild(p){
+  var box=$('ovill'), h='';
+  Array.prototype.slice.call(box.querySelectorAll('button')).forEach(function(b){ b.remove(); });
+  if(!p.ills){ box.hidden=true; return; }
+  WS_ILL.forEach(function(g){ h+='<button type="button" data-n="'+g.n+'" aria-label="삽화 '+g.n+' 크게 보기"><img src="'+g.f+'" alt="삽화 '+g.n+'"><b>'+g.n+'</b></button>'; });
+  box.insertAdjacentHTML('beforeend',h); box.hidden=false;
+}
+function illShow(n){ var g=WS_ILL[n-1]; if(!g) return; $('illimg').src=g.f; $('illimg').alt='삽화 '+n; $('illcap').textContent='삽화 '+n+' / '+WS_ILL.length; $('illbox').hidden=false; }
+$('ovill').addEventListener('click',function(e){ var b=e.target.closest('button[data-n]'); if(b) illShow(+b.dataset.n); });
+$('illbox').addEventListener('click',function(){ $('illbox').hidden=true; });
 function seqUpdate(scroll){
   var p=D[seq.idx], rows=p.seq, c=seq.c, n=rows.length, trs=$('ovbody').children, k;
   for(k=0;k<trs.length;k++){ trs[k].classList.toggle('done',k<c); trs[k].classList.toggle('cur',k===c); trs[k].classList.toggle('nxt',k===c+1); }
@@ -1005,7 +1031,7 @@ $('ovbody').onclick=function(e){ var t=e.target.closest('.ov-tr'); if(t) seqSet(
 document.addEventListener('click',function(e){ var b=e.target.closest('.seqbtn'); if(b) openSeq(+b.dataset.seq); });
 document.addEventListener('keydown',function(e){
   if(!seq.open) return;
-  if(e.key==='Escape') closeSeq(); else if(e.key==='ArrowRight'||e.key==='ArrowDown') seqSet(seq.c+1); else if(e.key==='ArrowLeft'||e.key==='ArrowUp') seqSet(seq.c-1);
+  if(e.key==='Escape'){ if(!$('illbox').hidden) $('illbox').hidden=true; else closeSeq(); } else if(e.key==='ArrowRight'||e.key==='ArrowDown') seqSet(seq.c+1); else if(e.key==='ArrowLeft'||e.key==='ArrowUp') seqSet(seq.c-1);
 });
 
 /* ---------------- main loop ---------------- */
