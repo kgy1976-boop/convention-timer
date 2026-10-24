@@ -117,6 +117,10 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .chip.L { border-color: var(--left); background: color-mix(in srgb, var(--left) 16%, transparent); }
 .chip.R { border-color: var(--right); background: color-mix(in srgb, var(--right) 16%, transparent); }
 .chip .ct { display: block; font-size: 11px; color: var(--mute); }
+.chip.ill { border-color: var(--ok); background: var(--ok); color: var(--onacc); }
+.chip.ill .ct { color: inherit; font-weight: 800; }
+.ill-tag { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 99px; background: var(--ok); color: var(--onacc); font-size: 12px; font-weight: 800; vertical-align: 1px; }
+.ov-card.ill { border-color: var(--ok); }
 .chip b { font-size: 17px; }
 .ov-tr.cur .chip b { font-size: 19px; }
 .ov-f { display: flex; gap: 8px; align-items: stretch; }
@@ -934,11 +938,13 @@ function seqLoad(i){
 }
 function seqSave(){ try{ localStorage.setItem('seqStep1',JSON.stringify({k:seqKey(seq.idx),c:seq.c,at:Date.now()})); }catch(e){} }
 function seqCur(i){ return seq.idx===i?seq.c:seqLoad(i); }
+function seqIll(r){ return r.who.some(function(w){ return /삽화/.test(w.t||r.t); }); }
 function seqSide(r){ return r.who[0].m<=2?'L':'R'; }
 function seqCard(r,lb,cls){
   if(!r) return '<div class="ov-card '+cls+'"><div class="lb">'+lb+'</div><div class="nm">마침</div></div>';
   var s=seqSide(r);
-  return '<div class="ov-card '+cls+'"><div class="lb">'+lb+'</div><div class="ar '+s+'">'+(s==='L'?'◀ 왼쪽 ':'오른쪽 ▶ ')+'마이크 '+r.who.map(function(w){return w.m;}).join('·')+'번</div>'
+  var ill=seqIll(r);
+  return '<div class="ov-card '+cls+(ill?' ill':'')+'"><div class="lb">'+lb+(ill?'<span class="ill-tag">삽화 사용</span>':'')+'</div><div class="ar '+s+'">'+(s==='L'?'◀ 왼쪽 ':'오른쪽 ▶ ')+'마이크 '+r.who.map(function(w){return w.m;}).join('·')+'번</div>'
     +'<div class="nm">'+r.who.map(function(w){return esc(w.n);}).join(' · ')+'</div><div class="tt2">'+esc(r.t)+'</div></div>';
 }
 function seqBuild(i){
@@ -947,7 +953,8 @@ function seqBuild(i){
   $('ovth').innerHTML='<div class="L">마이크 1<small>왼쪽</small></div><div class="L">마이크 2<small>왼쪽</small></div><div class="C">연단 (中)<small>'+esc(p.who||'')+'</small></div><div class="R">마이크 3<small>오른쪽</small></div><div class="R">마이크 4<small>오른쪽</small></div>';
   p.seq.forEach(function(r,k){
     var cells=['','','','',''];
-    r.who.forEach(function(w){ cells[map[w.m]]='<div class="chip '+(w.m<=2?'L':'R')+'"><span class="ct">'+esc(w.t||r.t)+'</span><b>'+esc(w.n)+'</b></div>'; });
+    r.who.forEach(function(w){ var wt=w.t||r.t, ill=/삽화/.test(wt), sub=wt.replace(/^삽화 ?/,'');
+      cells[map[w.m]]='<div class="chip '+(w.m<=2?'L':'R')+(ill?' ill':'')+'"><span class="ct">'+(ill?'삽화 사용'+((sub&&sub!=='해설')?' · '+esc(sub):''):esc(wt))+'</span><b>'+esc(w.n)+'</b></div>'; });
     h+='<div class="ov-tr" data-k="'+k+'">'+cells.map(function(c,x){ return '<div'+(x===2?' class="C"':'')+'>'+c+'</div>'; }).join('')+'</div>';
   });
   $('ovbody').innerHTML=h; seq.built=i;
